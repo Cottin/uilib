@@ -6,7 +6,7 @@ export default staticStyles = "
 		width: 2.5em;
 		height: 2.5em;
 		animation-fill-mode: both;
-		animation: bblFadInOut 1.8s infinite ease-in-out;
+		animation: ani-spinner-jumpingBalls 1.8s infinite ease-in-out;
 	}
 	.spinner-jumpingBalls {
 		font-size: 7px;
@@ -29,10 +29,82 @@ export default staticStyles = "
 		left: 3.5em;
 	}
 
-	@keyframes bblFadInOut {
+	@keyframes ani-spinner-jumpingBalls {
 		0%, 80%, 100% { box-shadow: 0 2.5em 0 -1.3em }
 		40% { box-shadow: 0 2.5em 0 0 }
 	}
+
+
+	.spinner-pulse {
+		width: 48px;
+		height: 48px;
+		display: inline-block;
+		position: relative;
+	}
+	.spinner-pulse::after,
+	.spinner-pulse::before {
+		content: '';  
+		box-sizing: border-box;
+		width: 48px;
+		height: 48px;
+		border-radius: 50%;
+		background: #FFF;
+		position: absolute;
+		left: 0;
+		top: 0;
+		animation: ani-spinner-pulse 2s linear infinite;
+	}
+	.spinner-pulse::after {
+		animation-delay: 1s;
+	}
+
+	@keyframes ani-spinner-pulse {
+		0% {
+			transform: scale(0);
+			opacity: 1;
+		}
+		100% {
+			transform: scale(1);
+			opacity: 0;
+		}
+	}
+			
+
+.loader {
+  width: 48px;
+  height: 48px;
+  display: inline-block;
+  position: relative;
+}
+.loader::after,
+.loader::before {
+  content: '';  
+  box-sizing: border-box;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #FFF;
+  position: absolute;
+  left: 0;
+  top: 0;
+  animation: animloader 2s linear infinite;
+}
+.loader::after {
+  animation-delay: 1s;
+}
+
+@keyframes animloader {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+    
+
 
 	
 	.aniModal-enter {

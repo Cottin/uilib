@@ -286,15 +286,18 @@ export useCall2 = (optionsOrCall, callOrUndefined) ->
 # on shared app data, then use the architecture of app2.
 export createViewModel = (makeDefaultState, customExec = {}, viewModel) ->
 	initialState = makeDefaultState()
-	ref = {state: initialState, vm: viewModel(initialState), subs: []}
+	ref = {state: initialState, vm: viewModel(initialState), subs: [], delta: {}}
 
 	callSubs = () ->
-		for sub in ref.subs then sub {state: ref.state, vm: ref.vm}
+		for sub in ref.subs
+			sub {state: ref.state, vm: ref.vm}
 
 	makeChange = (spec) ->
-		ref.state = change spec, ref.state
+		ref.state = change.meta spec, ref.state, {}, ref.delta
 		ref.vm = viewModel ref.state
 		callSubs()
+
+	getDelta = () -> ref.delta
 
 	buildCustomOps = (f) ->
 		return (...args) ->
@@ -307,8 +310,10 @@ export createViewModel = (makeDefaultState, customExec = {}, viewModel) ->
 		ref.subs.push cb
 		return () -> ref.subs = without cb, ref.subs
 
-	useViewModel = () ->
-		[localState, setLocalState] = useState {state: ref.state, vm: ref.vm}
+	useViewModel = (initialState) ->
+		[localState, setLocalState] = useState () ->
+			if initialState then reset initialState # we only do this first time
+			return {state: ref.state, vm: ref.vm}
 		useEffect () -> 
 			cb = ({state, vm}) -> setLocalState {state, vm}
 			subscribe cb
@@ -316,9 +321,10 @@ export createViewModel = (makeDefaultState, customExec = {}, viewModel) ->
 
 		return [localState.vm, localState.state]
 
-	reset = () ->
-		ref.state = makeDefaultState()
+	reset = (specificState = null) ->
+		ref.state = if specificState then specificState else makeDefaultState()
 		ref.vm = viewModel ref.state
+		ref.delta = {}
 		callSubs()
 
 	Debug = () ->
@@ -328,4 +334,5 @@ export createViewModel = (makeDefaultState, customExec = {}, viewModel) ->
 			_ 'pre', {s: 'w50%'}, sf2 vm
 			_ 'pre', {s: 'w50%'}, sf2 state
 
-	return {useViewModel, exec, reset, Debug}
+	return {useViewModel, exec, reset, Debug, getDelta}
+
