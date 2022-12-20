@@ -57,7 +57,7 @@ getPosition = (e) ->
 # hilight: (item) -> return (item.id == forcedHilightedId) # force a hilight without hovering
 # e.g.
 #   items = [{value: 142, color: '#00ff00', hoverColor: '#00cc00'}, ...]
-export default Pie = ({s, items, Label, children, onHover = null, hilight = null}) ->
+export default Pie = ({s, items, Label, children, onHover = null, hilight = null, onClick}) ->
 	[st, cs, rs] = useChangeState {degree: null, radius: null, x: null, y: null}
 	childRef = React.useRef null
 	selfRef = React.useRef null
@@ -69,6 +69,7 @@ export default Pie = ({s, items, Label, children, onHover = null, hilight = null
 	totalPercent = 0
 
 	data = []
+	idx = 0
 
 	for item in items || []
 		percentFrom = totalPercent
@@ -96,9 +97,13 @@ export default Pie = ({s, items, Label, children, onHover = null, hilight = null
 		coords = percentToCoords mathPercent, labelRadious
 		position = $ coordsToPosition(coords.x, coords.y), map (n) -> n * 100
 
-		data.push {...item, position, percent: Math.round itemPercent}
+		data.push {...item, position, percent: Math.round(itemPercent), percentFrom, percentTo, idx: idx++}
 
 		gradient.push "#{color} 0 #{totalPercent}%"
+
+	getItem = (cssPercent) ->
+		for item in data
+			if item.percentFrom <= cssPercent && item.percentTo >= cssPercent then return item
 
 	mouseMove = (e) ->
 		[x, y, radius, degree, cssPercent] = getPosition e
@@ -114,14 +119,20 @@ export default Pie = ({s, items, Label, children, onHover = null, hilight = null
 		hoveredRef.current = null
 		rs()
 
-	_ {s: s + 'w100% pt100% br50% xrcc z2 sh0_1_3_0_bk-4 posr ho(scale1.05) _fade1', ref: selfRef,
-	style: {background: if isEmpty gradient then _.colors('beb-5') else "conic-gradient(#{gradient.join ', '})"},
-	onMouseMove: if onHover then mouseMove
-	onMouseOut: if onHover then mouseOut},
-		Label && $ data, mapI (item, i) -> 
-			# _ {s: "posa lef#{position.x}% top#{position.y}% w20% h20% ml-10% mt-10% xccc"}
-				# _ Label, item
-			_ {s: "fawh5-11 posa lef#{item.position.x}% top#{item.position.y}% w20% h20% ml-10% mt-10% xccc", key: i},
-				_ Label, item
-		_ {s: 'posa top0 lef0 br50% h100% w100% xccc', ref: childRef},
-			children
+	onClickSelf = (e) ->
+		[x, y, radius, degree, cssPercent] = getPosition e
+		onClick? items[getItem(cssPercent).idx]
+
+	_ {s: s + 'bgbe br50%'},
+		_ {s: 'w100% pt100% br50% xrcc z2 sh0_1_3_0_bk-4 posr ho(scale1.05) _fade1', ref: selfRef,
+		style: {background: if isEmpty gradient then _.colors('beb-5') else "conic-gradient(#{gradient.join ', '})"},
+		onMouseMove: if onHover then mouseMove
+		onMouseOut: if onHover then mouseOut
+		onClick: onClickSelf},
+			Label && $ data, mapI (item, i) -> 
+				# _ {s: "posa lef#{position.x}% top#{position.y}% w20% h20% ml-10% mt-10% xccc"}
+					# _ Label, item
+				_ {s: "fawh5-11 posa lef#{item.position.x}% top#{item.position.y}% w20% h20% ml-10% mt-10% xccc", key: i},
+					_ Label, item
+			_ {s: 'posa top0 lef0 br50% h100% w100% xccc', ref: childRef},
+				children
