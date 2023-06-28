@@ -4,8 +4,6 @@ import NextLink from 'next/link'
 
 import {prepareNavigate} from 'comon/client/clientUtils'
 
-import {_} from 'setup'
-
 
 export default Link = ({href, spec, children, ...rest}) ->
   router = useRouter()
