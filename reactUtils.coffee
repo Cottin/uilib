@@ -121,8 +121,8 @@ export useOuterMouseDown = (ref, onOuterMouseDown) ->
 export useMouseMonitor = ({mouseMove, mouseUp}, deps, init, skip=false) ->
 	React.useEffect () ->
 		if skip then return () ->
-		if mouseMove then window.addEventListener 'mousemove', mouseMove
-		if mouseUp then window.addEventListener 'mouseup', mouseUp
+		if mouseMove then window.addEventListener 'mousemove', mouseMove, {passive: true} # testing passive
+		if mouseUp then window.addEventListener 'mouseup', mouseUp, {passive: true} # ...for perf improvements
 		init?()
 		return () ->
 			if mouseMove then window.removeEventListener 'mousemove', mouseMove
@@ -232,7 +232,7 @@ _useCall2 = ({successDelay = 1500, onError = null, asyncCall}) ->
 			if result == 'ABORT'
 				cs {wait: false}
 				return result
-			if !isMounted.current then return result
+			# if !isMounted.current then return result # uncommenting because file upload/download dosent work otherwise
 
 			cs {wait: false, success: true, result}
 			if successDelay > 0 then setTimeout (->
