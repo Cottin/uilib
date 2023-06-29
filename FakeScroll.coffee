@@ -82,18 +82,25 @@ export staticStyles = "
 	}
 "
 
-calcScrollBar = () ->
+calcHeightAndHide = () ->
 	heightPercent = window.innerHeight / window.document.body.scrollHeight
 	height = heightPercent * window.innerHeight
+
+	hide = window.document.body.scrollHeight == window.innerHeight
+
+	return {height, hide}
+
+calcScrollBar = () ->
+	{height, hide} = calcHeightAndHide()
 
 	scrollPercent = window.pageYOffset / (window.document.body.scrollHeight - window.innerHeight)
 	top = scrollPercent * (window.innerHeight - height)
 
-	return {height, top}
+	return {height, top, hide}
 
 
 export default FakeScroll = ({sOut = 'bgbk-2', sOver = 'bgbk-5'}) ->
-	[{top, height}, setScroll] = useState {top: 0, height: 0}
+	[{top, height, hide}, setScroll] = useState {top: 0, height: 0, hide: true}
 	refDrag = useRef null
 	[forceUpdateCount, setForceUpdateCount] = useState 0
 	forceUpdate = () -> setForceUpdateCount (x) -> x + 1
@@ -108,9 +115,20 @@ export default FakeScroll = ({sOut = 'bgbk-2', sOver = 'bgbk-5'}) ->
 		window.removeEventListener 'resize', onScroll
 		window.addEventListener 'resize', onScroll, { passive: true }
 
+		sizeCheck = () -> 
+			# Can't find an event for when scrollHeight changes so polling as a workaround
+			check = calcHeightAndHide()
+			if check.height != height || check.hide != hide
+				setScroll (current) -> {...current, height: check.height, hide: check.hide}
+
+		timeout = window.setTimeout sizeCheck, 100 # one extra at 100 for nicer initial load
+		interval = window.setInterval sizeCheck, 1000
+
 		return () ->
 			window.removeEventListener 'scroll', onScroll
 			window.removeEventListener 'resize', onScroll
+			window.clearTimeout timeout
+			window.clearInterval interval
 	, []
 
 	onMouseDown = (e) -> 
@@ -135,7 +153,8 @@ export default FakeScroll = ({sOut = 'bgbk-2', sOver = 'bgbk-5'}) ->
 
 
 	sDrag = if refDrag.current then 'rig0' else 'rig-5'
-	_ {s: "ho(rig0) hoc1(#{sOver}) #{sDrag} useln w20 h#{height}px posf top#{top}px z9999 xre_"
+	sHide = if hide then 'disn'
+	_ {s: "ho(rig0) hoc1(#{sOver}) #{sDrag} useln w20 h#{height}px posf top#{top}px z9999 xre_ #{sHide}"
 	style: {transition: 'right 0.08s ease-out 0s'}
 	onMouseDown},
 		_ {s: "w50% #{sOut} h100% _fade1 #{refDrag.current && sOver}", className: 'c1'}
