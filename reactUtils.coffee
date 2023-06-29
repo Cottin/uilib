@@ -310,10 +310,11 @@ export createViewModel = (makeDefaultState, customExec = {}, viewModel) ->
 		ref.subs.push cb
 		return () -> ref.subs = without cb, ref.subs
 
-	useViewModel = (initialState) ->
+	useViewModel = (stateToVM) ->
 		[localState, setLocalState] = useState () ->
-			if initialState then reset initialState # we only do this first time
+			if stateToVM then reset stateToVM # we only do this first time
 			return {state: ref.state, vm: ref.vm}
+			
 		useEffect () -> 
 			cb = ({state, vm}) -> setLocalState {state, vm}
 			subscribe cb
