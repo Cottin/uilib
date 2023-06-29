@@ -60,7 +60,7 @@ getPosition = (e) ->
 # hilight: (item) -> return (item.id == forcedHilightedId) # Having hard react problems with hilight, use hilighted instead
 # e.g.
 #   items = [{value: 142, color: '#00ff00', hoverColor: '#00cc00'}, ...]
-export default Pie = React.memo ({s, items, Label, children, onHover = null, hilighted = null, onClick, className}) ->
+export default Pie = React.memo ({s, s2, items, Label, children, onHover = null, hilighted = null, onClick, className}) ->
 	childRef = React.useRef null
 	selfRef = React.useRef null
 
@@ -157,7 +157,7 @@ export default Pie = React.memo ({s, items, Label, children, onHover = null, hil
 		onClick? items[getItem(cssPercent).idx], e
 
 	_ {s: "#{s} bgbe br50%"},
-		_ {s: 'w100% pt100% br50% xrcc z2 sh0_1_3_0_bk-4 posr ho(scale1.05) _fade1', ref: selfRef,
+		_ {s: "w100% pt100% br50% xrcc z2 sh0_1_3_0_bk-4 posr ho(scale1.05) _fade1 #{s2}", ref: selfRef,
 		style: {background: if isEmpty gradient then colors('beb-5') else "conic-gradient(#{gradient.join ', '})"},
 		onMouseMove: if onHover then mouseMove
 		onMouseOut: if onHover then mouseOut
