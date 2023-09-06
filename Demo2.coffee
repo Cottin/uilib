@@ -5,6 +5,7 @@ import {useCall2} from 'uilib/reactUtils'
 import {sleep} from 'comon/shared'
 
 import Button from './Button2'
+import LinkButton from './LinkButton2'
 import Spinner from './Spinner2'
 import Tooltip from './Tooltip'
 
@@ -14,6 +15,7 @@ export default Demo = () ->
 	_ {},
 		# _ {}, 'test123'
 		_ ButtonDemo, {}
+		_ LinkButtonDemo, {}
 		_ TooltipDemo, {}
 		# _ SpinnerDemo, {}
 
@@ -110,7 +112,35 @@ ButtonDemo = () ->
 
 		_ Box1, {title: 'Kind = pill'},
 			_ Item, {desc: 'look: default'},
-				_ Button, {kind: 'pill', onClick, wait}, 'Start'
+				_ {s: 'xr__'},
+					_ Button, {kind: 'pill', onClick, wait, s: 'mr10'}, 'Start'
+					_ Button, {kind: 'pill', disabled: true, onClick, wait}, 'Start'
+			_ Item, {desc: 'look: red'},
+				_ {s: 'xr__'},
+					_ Button, {kind: 'pill', look: 'red', onClick, wait, s: 'mr10'}, 'Reload'
+					_ Button, {kind: 'pill', look: 'red', disabled: true, onClick, wait}, 'Reload'
+			_ Item, {desc: 'look: blue'},
+				_ {s: 'xr__'},
+					_ Button, {kind: 'pill', look: 'blue', onClick, wait, s: 'mr10'}, 'Click'
+					_ Button, {kind: 'pill', look: 'blue', disabled: true, onClick, wait}, 'Click'
+
+
+
+LinkButtonDemo = () ->
+	fake = useCall2 ->
+		await sleep 2000
+
+	onClick = fake.call
+	wait = fake.wait
+
+	_ Box, {title: 'LinkButton'},
+		_ Box1, {title: 'LinkButton can be any button and supports href'},
+			_ Item, {desc: ''},
+				_ {s: 'xr__'},
+					_ LinkButton, {kind: 'pill', href: {test: (x) -> if !x then 1 else parseInt(x) + 1}, wait, s: 'mr10'}, 'Link'
+					_ LinkButton, {s: 'mb20', href: '?test=123', kind: 'rounded', color: 'sea', onClick, wait}, 'Save'
+					_ LinkButton, {s: 'mb20', href: 'mailto:hello@timeadore.com?subject=Hello',
+					target: "_blank", rel: "noopener noreferrer", kind: 'rounded', look: 'text', onClick, wait}, 'Mailto'
 
 
 

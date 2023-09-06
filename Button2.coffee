@@ -1,12 +1,14 @@
 import React from 'react'
 
 import BounceLoader from 'react-spinners/BounceLoader'
-import Link from './Link2'
 
 import {useFela, colors} from 'setup'
 
 export default Button = ({s, sWrapper, kind = 'login', look = 'default', color, scale = 1.0, wait, onClick,
-  disabled, href, children, className, ...rest}) ->
+  disabled, children, className, href, ...rest}) ->
+
+  if href then throw new Error 'href no longer supported in Button, use LinkButton'
+
   # declare the className but skip it since s is the way to use it
   sBase = "curp _fade2 useln whn"
 
@@ -37,7 +39,13 @@ export default Button = ({s, sWrapper, kind = 'login', look = 'default', color, 
     if wait then sWait = 'br50% xrcc p10_20'
 
     if look == 'default'
-      sLook = "bggna fawh7-16 #{disabled && 'bgbue-4 fo(outbue-6_3)' || 'hofo(_sh5)'}"
+      sLook = "bggna fawh7-16 #{disabled && 'bggna-4 fo(outgna-6_3)' || 'hofo(_sh5)'}"
+      spinnerClr = 'wh'
+    else if look == 'red'
+      sLook = "bgrec fawh7-16 #{disabled && 'bgrec-4 fo(outrec-6_3)' || 'hofo(_sh5)'}"
+      spinnerClr = 'wh'
+    else if look == 'blue'
+      sLook = "bgbue fawh7-16 #{disabled && 'bgbue-4 fo(outbue-6_3)' || 'hofo(_sh5)'}"
       spinnerClr = 'wh'
 
   else if kind == 'rounded'
@@ -80,7 +88,8 @@ export default Button = ({s, sWrapper, kind = 'login', look = 'default', color, 
   extra = {onClick: onClickSelf}
   if rest.type == 'submit' then extra.onSubmit = (e) -> if wait then e.preventDefault()
 
-  inner = 
+
+  _ {s: "#{sWrapperBase} #{sWrapper}"},
     _ 'button', {s: "#{sBase} #{sKind} #{sLook} #{sWait} #{s}", ...extra, ...rest},
       if !wait then children
       else
@@ -89,10 +98,21 @@ export default Button = ({s, sWrapper, kind = 'login', look = 'default', color, 
           _ {s: 'posa'}, 
             _ BounceLoader, {color: colors(spinnerClr), loading: true, size: bounceSize}
 
-  if href
-    _ Link, {href},
-      _ 'a', {href, s: "#{sWrapperBase} #{sWrapper}"}, inner
-  else
-    _ {s: "#{sWrapperBase} #{sWrapper}"}, inner
+  # Added LinkButton and removed href to make it more DRY.
+  # Keeping this for now but remove if this seems to work
+  # inner = 
+  #   _ 'button', {s: "#{sBase} #{sKind} #{sLook} #{sWait} #{s}", ...extra, ...rest},
+  #     if !wait then children
+  #     else
+  #       _ Fragment,
+  #         _ {}, '\u00A0'
+  #         _ {s: 'posa'}, 
+  #           _ BounceLoader, {color: colors(spinnerClr), loading: true, size: bounceSize}
+
+  # if href
+  #   _ Link, {href, s: "#{sWrapperBase} #{sWrapper}"}, inner
+  #     # _ {s: "#{sWrapperBase} #{sWrapper}"}, inner
+  # else
+  #   _ {s: "#{sWrapperBase} #{sWrapper}"}, inner
 
 
