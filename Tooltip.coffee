@@ -26,7 +26,7 @@ export default Tooltip = ({s, sInner, sTriangle, children, direction = 'up', cla
 		sTri = 'rig100% mr-3px rot270'
 
 
-	_ {s: "#{sDir} posa op0 z999 pen #{s}", style: {transform}, className: "tooltip-panel #{className}",
+	_ {s: "#{sDir} posa op0 z9999999 pen #{s}", style: {transform}, className: "tooltip-panel #{className}",
 	...rest},
 		_ {s: "bggya op0.98 br5 posr xccc tac fawh-97-14 #{sInner}"},
 			_ SVGtriangleSmall, {s: "#{sTri} posa w10 fillgya #{sTriangle}"}
