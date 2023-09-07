@@ -36,7 +36,7 @@ export default AnimateHeight = ({children, className}) ->
     requestAnimationFrame () ->
       el.style.height = "#{newHeight}px"
 
-    return () ->
+    return undefined
   , [children, ref]
 
   _ {ref, style: {transition: "height 250ms", overflow: "hidden"}, className},
