@@ -80,6 +80,12 @@ export staticStyles = "
 	html {
 		scrollbar-width: none; /* Firefox */
 	}
+
+	@media print {
+		.hide-print {
+			display: none !important;
+		}
+	}
 "
 
 calcHeightAndHide = () ->
@@ -155,6 +161,6 @@ export default FakeScroll = ({sOut = 'bgbk-2', sOver = 'bgbk-5'}) ->
 	sDrag = if refDrag.current then 'rig0' else 'rig-5'
 	sHide = if hide then 'disn'
 	_ {s: "ho(rig0) hoc1(#{sOver}) #{sDrag} useln w20 h#{height}px posf top#{top}px z9999 xre_ #{sHide}"
-	style: {transition: 'right 0.08s ease-out 0s'}
+	style: {transition: 'right 0.08s ease-out 0s'}, className: 'hide-print',
 	onMouseDown},
 		_ {s: "w50% #{sOut} h100% _fade1 #{refDrag.current && sOver}", className: 'c1'}
