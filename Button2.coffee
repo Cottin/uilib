@@ -77,6 +77,17 @@ export default Button = ({s, sWrapper, kind = 'login', look = 'default', color, 
       sLook = "fabk-57-12 bg0 #{!disabled && 'hofo(op1 scale1.02 out0)'}"
       spinnerClr = 'wh'
 
+  else if kind == 'link'
+    sWrapperBase = ''
+    sKind = "p0 lh110%"
+    bounceSize = 15
+    if wait then sWait = 'br50% xrcc borb0'
+
+
+    if look == 'default'
+      sLook = "fabuk-67-#{fSize} borbbuk-2 bg0 #{disabled && 'op0.3' || 'ho(fabuk borbbuk-7)'}"
+      spinnerClr = 'buk'
+
 
   onClickSelf = (e) ->
     if wait || disabled then return e.preventDefault()

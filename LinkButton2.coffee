@@ -11,10 +11,10 @@ import Button from './Button2'
 
 # Separate LinkButton that wraps normal Button.
 # We don't want to support href in Button since then every button will useRouter which seems unnessesary
-export default LinkButton = ({href, target, rel, children, ...rest}) ->
+export default LinkButton = ({href, scroll = false, target, rel, children, ...rest}) ->
   router = useRouter()
   hrefToUse = if _type(href) == 'String' then href else prepareNavigate router, href
 
-  _ NextLink, {href: hrefToUse, prefetch: false, shallow: true, target, rel},
+  _ NextLink, {href: hrefToUse, prefetch: false, shallow: true, target, rel, scroll},
     _ Button, {children, ...rest}
     

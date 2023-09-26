@@ -124,6 +124,11 @@ ButtonDemo = () ->
 					_ Button, {kind: 'pill', look: 'blue', onClick, wait, s: 'mr10'}, 'Click'
 					_ Button, {kind: 'pill', look: 'blue', disabled: true, onClick, wait}, 'Click'
 
+		_ Box1, {title: 'Kind = link'},
+			_ Item, {desc: 'look: default'},
+				_ {s: 'xr__'},
+					_ Button, {kind: 'link', onClick, wait, s: 'mr10'}, 'Link'
+
 
 
 LinkButtonDemo = () ->
