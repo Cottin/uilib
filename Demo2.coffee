@@ -17,7 +17,7 @@ export default Demo = () ->
 		_ ButtonDemo, {}
 		_ LinkButtonDemo, {}
 		_ TooltipDemo, {}
-		# _ SpinnerDemo, {}
+		_ SpinnerDemo, {}
 
 
 Box = ({title, children}) -> 
@@ -44,90 +44,90 @@ ButtonDemo = () ->
 
 	onClick = fake.call
 	wait = fake.wait
+	success = fake.success
 
 	_ Box, {title: 'Button'},
 
 		_ Box1, {title: 'Kind = rounded'},
 
-
 			_ Item, {desc: 'look: default'},
 				_ {s: 'xr__'},
-					_ {s: 'mr10'},
-						_ Button, {s: 'mb20', kind: 'rounded', onClick, wait}, 'Save'
-					_ {s: 'mr10'},
-						_ Button, {s: 'mb20', kind: 'rounded', onClick, wait, disabled: true}, 'Save'
-					_ {s: 'mr10'},
-						_ Button, {s: 'mb20', kind: 'rounded', scale: 0.6, onClick, wait}, 'Scale 0.6'
-					_ {s: 'mr10'},
-						_ Button, {s: 'mb20', kind: 'rounded', scale: 0.7, onClick, wait}, 'Scale 0.7'
-					_ {s: 'mr10'},
-						_ Button, {s: 'mb20', kind: 'rounded', scale: 0.8, onClick, wait}, 'Scale 0.8'
-					_ {s: 'mr10'},
-						_ Button, {s: 'mb20', kind: 'rounded', scale: 0.9, onClick, wait}, 'Scale 0.9'
-					_ {s: 'mr10'},
-						_ Button, {s: 'mb20', kind: 'rounded', scale: 1.1, onClick, wait}, 'Scale 1.1'
-					_ {s: 'mr10'},
-						_ Button, {s: 'mb20', kind: 'rounded', scale: 1.2, onClick, wait}, 'Scale 1.2'
+					_ {s: 'mr10 h80'},
+						_ Button, {s: 'mb20', kind: 'rounded', scale: 1.2, onClick, wait, success}, 'Scale 1.2'
+					_ {s: 'mr10 h80'},
+						_ Button, {s: 'mb20', kind: 'rounded', onClick, wait, success}, 'Save'
+					_ {s: 'mr10 h80'},
+						_ Button, {s: 'mb20', kind: 'rounded', onClick, wait, disabled: true, success}, 'Save'
+					_ {s: 'mr10 h80'},
+						_ Button, {s: 'mb20', kind: 'rounded', scale: 0.6, onClick, wait, success}, 'Scale 0.6'
+					_ {s: 'mr10 h80'},
+						_ Button, {s: 'mb20', kind: 'rounded', scale: 0.7, onClick, wait, success}, 'Scale 0.7'
+					_ {s: 'mr10 h80'},
+						_ Button, {s: 'mb20', kind: 'rounded', scale: 0.8, onClick, wait, success}, 'Scale 0.8'
+					_ {s: 'mr10 h80'},
+						_ Button, {s: 'mb20', kind: 'rounded', scale: 0.9, onClick, wait, success}, 'Scale 0.9'
+					_ {s: 'mr10 h80'},
+						_ Button, {s: 'mb20', kind: 'rounded', scale: 1.1, onClick, wait, success}, 'Scale 1.1'
 
-			_ Item, {desc: 'look: default, color: sea'},
+			_ Item, {desc: 'look: default, color: sea, coral'},
 				_ {s: 'xr__'},
 					_ {s: 'mr10'},
-						_ Button, {s: 'mb20', kind: 'rounded', color: 'sea', onClick, wait}, 'Save'
+						_ Button, {s: 'mb20', kind: 'rounded', color: 'sea', onClick, wait, success}, 'Save'
 					_ {s: 'mr10'},
-						_ Button, {s: 'mb20', kind: 'rounded', color: 'sea', onClick, wait, disabled: true}, 'Save'
+						_ Button, {s: 'mb20', kind: 'rounded', color: 'sea', onClick, wait, success, disabled: true}, 'Save'
+					_ {s: 'mr10'},
+						_ Button, {s: 'mb20', kind: 'rounded', color: 'coral', onClick, wait, success}, 'Save'
+					_ {s: 'mr10'},
+						_ Button, {s: 'mb20', kind: 'rounded', color: 'coral', onClick, wait, success, disabled: true}, 'Save'
 
 			_ Item, {desc: 'look: text'},
 				_ {s: 'xr__'},
 					_ {s: 'mr10'},
-						_ Button, {s: 'mb20', kind: 'rounded', look: 'text', onClick, wait}, 'Cancel'
+						_ Button, {s: 'mb20', kind: 'rounded', look: 'text', onClick, wait, success}, 'Cancel'
 					_ {s: 'mr10'},
-						_ Button, {s: 'mb20', kind: 'rounded', look: 'text', onClick, wait, disabled: true}, 'Cancel'
+						_ Button, {s: 'mb20', kind: 'rounded', look: 'text', onClick, wait, success, disabled: true}, 'Cancel'
 
 		_ Box1, {title: 'Kind = login'},
-
 
 			_ Item, {desc: 'look: default'},
 				_ {s: 'xr__'},
 					_ {s: 'w400 mr30'},
-						_ Button, {s: 'mb20', type: 'submit', onClick, wait}, 'Sign up'
+						_ Button, {s: 'mb20', kind: 'login', type: 'submit', onClick, wait, success}, 'Sign up'
 					_ {s: 'w400'},
-						_ Button, {s: 'mb20', type: 'submit', onClick, wait, disabled: true}, 'Sign up'
+						_ Button, {s: 'mb20', kind: 'login', type: 'submit', onClick, wait, success, disabled: true}, 'Sign up'
 
 			_ Item, {desc: 'look: outline'},
 				_ {s: 'xr__'},
 					_ {s: 'w400 mr30'},
-						_ Button, {s: 'mt30', look: 'outline', onClick, wait},
+						_ Button, {s: 'mt30', kind: 'login', look: 'outline', onClick, wait, success},
 							_ {s: 'xrcc posr'},
 								_ SVGgoogle, {s: 'w20 lef0 posa'}
 								_ {}, 'Accept and continue'
-					_ {s: 'w400'}
-
-			# _ Item, {desc: 'look: link'},
-			# 	_ {s: 'xr__'},
-			# 		_ {s: 'w400 mr30'},
-			# 			_ Button, {s: 'mt40', look: 'link', onClick, wait}, 'No account? Sign up for FREE'
-			# 			_ Button, {look: 'link', href: '/login'}, 'Already have an account? Sign in'
-
-			# 		_ {s: 'w400'}
+					_ {s: 'w400'},
+						_ Button, {s: 'mb20', kind: 'login', look: 'link', type: 'submit', onClick, wait, success}, 'Click here on link'
 
 		_ Box1, {title: 'Kind = pill'},
 			_ Item, {desc: 'look: default'},
 				_ {s: 'xr__'},
-					_ Button, {kind: 'pill', onClick, wait, s: 'mr10'}, 'Start'
-					_ Button, {kind: 'pill', disabled: true, onClick, wait}, 'Start'
+					_ Button, {kind: 'pill', onClick, wait, success, s: 'mr10'}, 'Start'
+					_ Button, {kind: 'pill', disabled: true, onClick, wait, success}, 'Start'
 			_ Item, {desc: 'look: red'},
 				_ {s: 'xr__'},
-					_ Button, {kind: 'pill', look: 'red', onClick, wait, s: 'mr10'}, 'Reload'
-					_ Button, {kind: 'pill', look: 'red', disabled: true, onClick, wait}, 'Reload'
+					_ Button, {kind: 'pill', look: 'red', onClick, wait, success, s: 'mr10'}, 'Reload'
+					_ Button, {kind: 'pill', look: 'red', disabled: true, onClick, wait, success}, 'Reload'
 			_ Item, {desc: 'look: blue'},
 				_ {s: 'xr__'},
-					_ Button, {kind: 'pill', look: 'blue', onClick, wait, s: 'mr10'}, 'Click'
-					_ Button, {kind: 'pill', look: 'blue', disabled: true, onClick, wait}, 'Click'
+					_ Button, {kind: 'pill', look: 'blue', onClick, wait, success, s: 'mr10'}, 'Click'
+					_ Button, {kind: 'pill', look: 'blue', disabled: true, onClick, wait, success}, 'Click'
+			_ Item, {desc: 'look: text'},
+				_ {s: 'xr__'},
+					_ Button, {kind: 'pill', look: 'text', onClick, wait, success, s: 'mr10'}, 'Click'
+					_ Button, {kind: 'pill', look: 'text', disabled: true, onClick, wait, success}, 'Click'
 
 		_ Box1, {title: 'Kind = link'},
 			_ Item, {desc: 'look: default'},
 				_ {s: 'xr__'},
-					_ Button, {kind: 'link', onClick, wait, s: 'mr10'}, 'Link'
+					_ Button, {kind: 'link', onClick, wait, success, s: 'mr10'}, 'Link'
 
 
 

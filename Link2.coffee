@@ -1,3 +1,6 @@
+import _type from "ramda/es/type"; #auto_require: _esramda
+import {} from "ramda-extras" #auto_require: esramda-extras
+
 import React from 'react'
 import {useRouter} from 'next/router'
 import NextLink from 'next/link'
@@ -5,9 +8,9 @@ import NextLink from 'next/link'
 import {prepareNavigate} from 'comon/client/clientUtils'
 
 
-export default Link = ({href, spec, children, ...rest}) ->
+export default Link = ({href, scroll = false, target, rel, children, ...rest}) ->
   router = useRouter()
-  hrefToUse = if spec then prepareNavigate router, spec else href
+  hrefToUse = if _type(href) == 'String' then href else prepareNavigate router, href
 
-  _ NextLink, {href: hrefToUse, prefetch: false, shallow: true, ...rest},
+  _ NextLink, {href: hrefToUse, prefetch: false, shallow: true, target, rel, ...rest},
     children

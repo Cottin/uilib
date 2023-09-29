@@ -1,4 +1,4 @@
-import always from "ramda/es/always"; import equals from "ramda/es/equals"; import flip from "ramda/es/flip"; import init from "ramda/es/init"; import map from "ramda/es/map"; import type from "ramda/es/type"; import without from "ramda/es/without"; #auto_require: esramda
+import always from "ramda/es/always"; import equals from "ramda/es/equals"; import flip from "ramda/es/flip"; import init from "ramda/es/init"; import isNil from "ramda/es/isNil"; import map from "ramda/es/map"; import type from "ramda/es/type"; import without from "ramda/es/without"; #auto_require: esramda
 import {change, diff, isNilOrEmpty, sf2} from "ramda-extras" #auto_require: esramda-extras
 
 import React, {useState, useEffect} from 'react'
@@ -25,6 +25,19 @@ export useChangeState = (initial) ->
 	changeState = (spec) -> setState change spec
 	resetState = -> setState initial
 	return [state, changeState, resetState]
+
+# Sometimes things changes too quickly and your component wants to render the previous application state.
+# Eg. a modal where you mark hours as invoiced/uninvoiced wants to keep showing the previous state even
+# 		after the marking has been made to the data and the application state is updated.
+# This hook allows you to only work with the first non-nil state that you pass to it
+export useOnceState = (state) ->
+	[onceState, setOnceState] = useState state
+
+	useEffect () ->
+		if isNil onceState then setOnceState state
+	, [JSON.stringify state]
+
+	return onceState
 
 # Window callbacks (eg. mouseMove, mouseUp) closes over state so you'll get stale values in the callback.
 # The workaround here is to duplicate the state to a ref that can be used as expected in a window callback.
@@ -226,7 +239,7 @@ _useCall2 = ({successDelay = 1500, onError = null, asyncCall}) ->
 	[st, cs] = useChangeState {}
 
 	callFn = (args...) ->
-		cs {wait: true, error: undefined, result: undefined}
+		cs {wait: true, error: undefined, result: undefined, success: undefined}
 		try
 			result = await Promise.resolve asyncCall args...
 			if result == 'ABORT'

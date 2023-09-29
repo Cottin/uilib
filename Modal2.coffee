@@ -38,6 +38,23 @@ export Portal = ({children, rootSelector}) ->
 	return createPortal children, container
 
 
+# Usage 1:
+# _ Modal, {open},
+#		_ MyInnerModal, {}
+#
+# Result: MyInnerModal only rendered when open=true so little better perf and state and useCall is reset
+#					between open/close of modal.
+#
+# Usage 2:
+# _ MyModal, {open: isOpen}
+#	...
+# MyModal = ({open}) ->
+#   _ Modal, {open},
+#     _ {}, ...
+#
+# Result: MyModal always rendered even when open=false so little worse perf but state and useCall will never
+#					reset between open/close of modal.
+
 export default Modal = ({s, open, children, rootSelector = '#__next'}) ->
 	[ready, setReady] = useState false
 
@@ -45,6 +62,7 @@ export default Modal = ({s, open, children, rootSelector = '#__next'}) ->
 		timeout = setTimeout (-> setReady true), 100 # offset so if page is refreshed with open = true, animation plays
 		return () -> clearTimeout timeout
 	, []
+
 
 	onEntering = () ->
 		document.querySelector(rootSelector).style.filter = 'blur(4px)'

@@ -71,39 +71,39 @@ export default staticStyles = "
 			
 
 .loader {
-  width: 48px;
-  height: 48px;
-  display: inline-block;
-  position: relative;
+	width: 48px;
+	height: 48px;
+	display: inline-block;
+	position: relative;
 }
 .loader::after,
 .loader::before {
-  content: '';  
-  box-sizing: border-box;
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background: #FFF;
-  position: absolute;
-  left: 0;
-  top: 0;
-  animation: animloader 2s linear infinite;
+	content: '';  
+	box-sizing: border-box;
+	width: 48px;
+	height: 48px;
+	border-radius: 50%;
+	background: #FFF;
+	position: absolute;
+	left: 0;
+	top: 0;
+	animation: animloader 2s linear infinite;
 }
 .loader::after {
-  animation-delay: 1s;
+	animation-delay: 1s;
 }
 
 @keyframes animloader {
-  0% {
-    transform: scale(0);
-    opacity: 1;
-  }
-  100% {
-    transform: scale(1);
-    opacity: 0;
-  }
+	0% {
+		transform: scale(0);
+		opacity: 1;
+	}
+	100% {
+		transform: scale(1);
+		opacity: 0;
+	}
 }
-    
+		
 
 
 	
@@ -139,5 +139,112 @@ export default staticStyles = "
 		opacity: 0;
 		transition: opacity 300ms;
 	}
+
+
+
+	/* CHECKMARK - Adapted from https://stackoverflow.com/a/41078668/416797 ----------------------------- */
+	.checkmark {
+		border-radius: 50%;
+		display: block;
+		stroke-width: 6;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+	}
+
+	.checkmark__check {
+		transform-origin: 50% 50%;
+		stroke-dasharray: 98; /* Adjust speed of checkmar drawing by changing these two values */
+		stroke-dashoffset: 98;
+		animation: aniCheckStroke 0.5s cubic-bezier(0.65, 0, 0.45, 1) 0s forwards, aniCheckScale2 .5s ease-in-out 0s both;
+	}
+
+	.spinnerScale {
+		animation: aniCheckScale .3s ease-in-out 0s both;
+	}
+
+	@keyframes aniCheckStroke {
+		100% {
+			stroke-dashoffset: 0;
+		}
+	}
+	@keyframes aniCheckScale {
+		0%, 100% {
+			transform: none;
+		}
+		50% {
+			transform: scale3d(1.1, 1.1, 1);
+		}
+	}
+	@keyframes aniCheckScale2 {
+		0%, 100% {
+			transform: none;
+		}
+		50% {
+			transform: scale3d(1.3, 1.3, 1);
+		}
+	}
+
+
+	/* SPINNER - Adapded from Postnord https://account.postnord.com/public/login ----------------------- */
+	.spinnerSvg {
+    transition: transform 0.2s cubic-bezier(0.7, 0, 0.3, 1) 0.3s,
+    	-webkit-transform 0.2s cubic-bezier(0.7, 0, 0.3, 1) 0.3s;
+	    animation: 1s cubic-bezier(0.5, 0, 0.5, 1) 0s infinite normal none running aniSpinnerRotate;
+	}
+
+	.spinnerStroke {
+    animation: 2s cubic-bezier(0.5, 0, 0.5, 1) 0s infinite normal none running aniSpinnerStroke;
+    stroke-dasharray: 64;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transform: rotate(-310deg);
+    transform-origin: center center;
+	}
+
+	.spinnerShrink {
+		animation: aniSpinnerShrink 2s ease-in 0.2s 1 normal forwards;
+	}
+
+	@keyframes aniSpinnerStroke {
+		0% {
+			stroke-dashoffset: 55;
+		}
+		50% {
+			stroke-dashoffset: 12;
+		}
+		100% {
+			stroke-dashoffset: 55;
+		}
+	}
+
+	@keyframes aniSpinnerRotate {
+	  0% {
+	    transform: rotate(-180deg) scaleX(-1);
+	  }
+
+	  100% {
+	    transform: rotate(180deg) scaleX(-1);
+	  }
+	}
+
+	@keyframes aniSpinnerShrink {
+	  0% {
+	  	width: 100%;
+	    border-radius: 0;
+	  }
+
+	  100% {
+	  	width: 20%;
+	    border-radius: 50%;
+	  }
+	}
+
+	.spinnerBg {
+		transition: min-width 0.8s cubic-bezier(0.7, 0, 0.3, 1),
+								border-radius 0.6s cubic-bezier(0.7, 0, 0.3, 1) 0.2s,
+								background-color 0.15s ease,
+								outline 0.15s ease;
+	}
+	/* ------------------------------------------------------------------------------------------------- */
 
 "
