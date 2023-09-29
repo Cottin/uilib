@@ -92,15 +92,15 @@ export default Button = ({s, sWrapper, kind, look = 'default', color, scale = 1.
 			spinnerClr = 'bk-9'
 
 	else if kind == 'small'
-		throw new Error 'not yet implemented'
-		# sWrapperBase = ''
-		# sKind = 'p3_10 op0.3'
-		# bounceSize = 22
-		# if wait then sWait = 'br50% xrcc p10_20'
+		sButton += " op0.3"
+		sChildren += " p3_20 xrcc"
+		spinnerClr = 'bk'
 
-		# if look == 'discreet'
-		# 	sLook = "fabk-57-12 bg0 #{!disabled && 'hofo(op1 scale1.02 out0)'}"
-		# 	spinnerClr = 'wh'
+		if look == 'default'
+
+		else if look == 'discreet'
+			sButton += " #{!disabled && 'hofo(scale1.02 out0 op1)'} _fade1"
+			sChildren += " fabk-57-12"
 
 	else if kind == 'link'
 		sButton += " #{disabled && 'op0.3'} _fade1"

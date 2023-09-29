@@ -129,6 +129,14 @@ ButtonDemo = () ->
 				_ {s: 'xr__'},
 					_ Button, {kind: 'link', onClick, wait, success, s: 'mr10'}, 'Link'
 
+		_ Box1, {title: 'Kind = small'},
+			_ Item, {desc: 'look: default'},
+				_ {s: 'xr__'},
+					_ Button, {kind: 'small', onClick, wait, success, s: 'mr10'}, 'Start'
+			_ Item, {desc: 'look: discreet'},
+				_ {s: 'xr__'},
+					_ Button, {kind: 'small', look: 'discreet', onClick, wait, success, s: 'mr10'}, 'Start'
+
 
 
 LinkButtonDemo = () ->
