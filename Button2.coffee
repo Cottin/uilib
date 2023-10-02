@@ -6,8 +6,8 @@ import {useFela, colors} from 'setup'
 
 import {Checkmark, Spinner} from './SVGs'
 
-export default Button = ({s, sWrapper, kind, look = 'default', color, scale = 1.0, wait, success,
-	onClick, disabled, children, className, href, ...rest}) ->
+export default Button = ({s, sChildren: sChildrenProp, sBg: sBgProp, kind, look = 'default', color,
+	scale = 1.0, wait, success, onClick, disabled, children, className, href, ...rest}) ->
 
 	style = {}
 
@@ -137,11 +137,11 @@ export default Button = ({s, sWrapper, kind, look = 'default', color, scale = 1.
 
 
 	_ 'button', {s: "#{sButton} #{s}", ...extra, ...rest},
-		_ {s: sBg, className: "c4 spinnerBg #{success && 'spinnerScale'}"},
+		_ {s: "#{sBg} #{sBgProp}", className: "c4 spinnerBg #{success && 'spinnerScale'}"},
 			if wait then _ Spinner, {s: 'p2', clr: spinnerClr}
 			else if success then _ Checkmark, {s: 'h100%', clr: spinnerClr}
 
-		_ {s: sChildren, className: 'c5'},
+		_ {s: "#{sChildren} #{sChildrenProp}", className: 'c5'},
 			children
 
 
