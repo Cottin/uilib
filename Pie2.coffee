@@ -165,6 +165,7 @@ export default Pie = React.memo ({s, s2, items, Label, children, onHover = null,
 		onMouseOut: if onHover then mouseOut
 		onClick: onClickSelf},
 			Label && $ data, mapI (item, i) -> 
+				if isNaN item.position.x then return 
 				_ {s: "fawh5-11 posa lef#{item.position.x}% top#{item.position.y}% w20% h20% ml-10% mt-10% xccc", key: i},
 					_ Label, item
 			_ {s: 'posa top0 lef0 br50% h100% w100% xccc', ref: childRef},
