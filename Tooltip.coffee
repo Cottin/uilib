@@ -6,22 +6,22 @@ import SVGtriangleSmall from 'icons/triangleSmall.svg'
 
 export default Tooltip = ({s, sInner, sTriangle, children, direction = 'up', className, ...rest}) ->
 	if direction == 'up'
-		sDir = 'bot100% lef50% mb5'
+		sDir = 'bot100% lef50% pb5'
 		transform = 'translateX(-50%)'
 		sTri = 'top100% rot180'
 
 	else if direction == 'down'
-		sDir = 'top100% lef50% mt5'
+		sDir = 'top100% lef50% pt5'
 		transform = 'translateX(-50%)'
 		sTri = 'bot100%'
 
 	else if direction == 'left'
-		sDir = 'rig100% top50% mr5'
+		sDir = 'rig100% top50% pr5'
 		transform = 'translateY(-50%)'
 		sTri = 'lef100% ml-3px rot90'
 
 	else if direction == 'right'
-		sDir = 'lef100% top50% ml5'
+		sDir = 'lef100% top50% pl5'
 		transform = 'translateY(-50%)'
 		sTri = 'rig100% mr-3px rot270'
 

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useState} from 'react'
 
 import SVGgoogle from 'icons/google.svg'
 import {useCall2} from 'uilib/reactUtils'
@@ -8,6 +8,7 @@ import Button from './Button2'
 import LinkButton from './LinkButton2'
 import Spinner from './Spinner2'
 import Tooltip from './Tooltip'
+import Switch from './Switch2'
 
 import {useFela, colors} from 'setup'
 
@@ -16,6 +17,7 @@ export default Demo = () ->
 		# _ {}, 'test123'
 		_ ButtonDemo, {}
 		_ LinkButtonDemo, {}
+		_ SwitchDemo, {}
 		_ TooltipDemo, {}
 		_ SpinnerDemo, {}
 
@@ -156,7 +158,22 @@ LinkButtonDemo = () ->
 					target: "_blank", rel: "noopener noreferrer", kind: 'rounded', look: 'text', onClick, wait}, 'Mailto'
 
 
+SwitchDemo = () ->
+	[flag, setFlag] = useState false
+	_ Box, {title: 'Switch'},
+		_ Box1, {title: 'Normal'},
+			_ Item, {desc: 'Scale 0.8 ... 1.2'},
+				_ {s: 'xr__'},
+					_ Switch, {s: 'mr15', scale: 0.8, value: flag, onChange: (val) -> setFlag val}
+					_ Switch, {s: 'mr15', scale: 0.9, value: flag, onChange: (val) -> setFlag val}
+					_ Switch, {s: 'mr15', scale: 1.0, value: flag, onChange: (val) -> setFlag val}
+					_ Switch, {s: 'mr15', scale: 1.1, value: flag, onChange: (val) -> setFlag val}
+					_ Switch, {s: 'mr15', scale: 1.2, value: flag, onChange: (val) -> setFlag val}
 
+		_ Box1, {title: 'look = dark'},
+			_ Item, {desc: ''},
+				_ {s: 'bgbk p10'},
+					_ Switch, {s: 'mr15', look: 'dark', scale: 0.8, value: flag, onChange: (val) -> setFlag val}
 
 SpinnerDemo = () ->
 	_ Box, {title: 'Spinner'},
@@ -172,31 +189,77 @@ TooltipDemo = () ->
 
 	_ Box, {title: 'Tooltip'},
 
-		_ Item, {},
-			_ {s: 'xr__'},
-				_ {s: 'mr40'},
-					_ {s: 'bg1 p20 hoc1(op1) posr'},
-						_ {}, 'direction = up (default)',
-						_ Tooltip, {s: '_fade1', className: 'c1'},
-							_ {s: 'whn p10_20'}, 'This is a tooltip'
-							
-				_ {s: 'mr40'},
-					_ {s: 'bg1 p20 hoc1(op1) posr'},
-						_ {}, 'direction = right',
-						_ Tooltip, {s: '_fade1', direction: 'right', className: 'c1'},
-							_ {s: 'whn p10_20'}, 'This is a tooltip'
-							
-				_ {s: 'mr40'},
-					_ {s: 'bg1 p20 hoc1(op1) posr'},
-						_ {}, 'direction = down',
-						_ Tooltip, {s: '_fade1', direction: 'down', className: 'c1'},
+		_ Box1, {title: 'Directions'},
+			_ Item, {},
+				_ {s: 'xr__'},
+					_ {s: 'mr40'},
+						_ {s: 'bg1 p20 hoc1(op1) posr'},
+							_ {}, 'direction = up (default)',
+							_ Tooltip, {s: '_fade1', className: 'c1'},
+								_ {s: 'whn p10_20'}, 'This is a tooltip'
+								
+					_ {s: 'mr40'},
+						_ {s: 'bg1 p20 hoc1(op1) posr'},
+							_ {}, 'direction = right',
+							_ Tooltip, {s: '_fade1', direction: 'right', className: 'c1'},
+								_ {s: 'whn p10_20'}, 'This is a tooltip'
+								
+					_ {s: 'mr40'},
+						_ {s: 'bg1 p20 hoc1(op1) posr'},
+							_ {}, 'direction = down',
+							_ Tooltip, {s: '_fade1', direction: 'down', className: 'c1'},
+								_ {s: 'whn p10_20'}, 'This is a tooltip'
+
+					_ {s: 'mr40'},
+						_ {s: 'bg1 p20 hoc1(op1) posr'},
+							_ {}, 'direction = left',
+							_ Tooltip, {s: '_fade1', direction: 'left', className: 'c1'},
+								_ {s: 'whn p10_20'}, 'This is a tooltip'
+
+		_ Box1, {title: 'Keep tooltip open on hover (wrap and use pea)'},
+
+			_ Item, {desc: 'Problem: TRY MARKING THIS + when hovering on tooltip, the more right gets priority'},
+				_ {s: 'xr__'},
+
+					_ {s: 'posr hoc1(op1) posr'},
+						_ {s: 'bg1 p20 mr2'},
+							_ {}, 'A',
+						_ Tooltip, {s: '_fade1 pea', direction: 'down', className: 'c1'},
 							_ {s: 'whn p10_20'}, 'This is a tooltip'
 
-				_ {s: 'mr40'},
-					_ {s: 'bg1 p20 hoc1(op1) posr'},
-						_ {}, 'direction = left',
-						_ Tooltip, {s: '_fade1', direction: 'left', className: 'c1'},
+					_ {s: 'posr hoc1(op1) posr'},
+						_ {s: 'bg1 p20 mr2'},
+							_ {}, 'B',
+						_ Tooltip, {s: '_fade1 pea', direction: 'down', className: 'c1'},
 							_ {s: 'whn p10_20'}, 'This is a tooltip'
+
+					_ {s: 'posr hoc1(op1) posr'},
+						_ {s: 'bg1 p20 mr2'},
+							_ {}, 'C',
+						_ Tooltip, {s: '_fade1 pea', direction: 'down', className: 'c1'},
+							_ {s: 'whn p10_20'}, 'This is a tooltip'
+
+			_ Item, {desc: 'Workaround: use display instead of opacity. Works but kills fade'},
+				_ {s: 'xr__'},
+
+					_ {s: 'posr hoc1(op1 disu) posr'},
+						_ {s: 'bg1 p20 mr2'},
+							_ {}, 'A',
+						_ Tooltip, {s: '_fade1 pea disn', direction: 'down', className: 'c1'},
+							_ {s: 'whn p10_20'}, 'This is a tooltip'
+
+					_ {s: 'posr hoc1(op1 disu) posr'},
+						_ {s: 'bg1 p20 mr2'},
+							_ {}, 'B',
+						_ Tooltip, {s: '_fade1 pea disn', direction: 'down', className: 'c1'},
+							_ {s: 'whn p10_20'}, 'This is a tooltip'
+
+					_ {s: 'posr hoc1(op1 disu) posr'},
+						_ {s: 'bg1 p20 mr2'},
+							_ {}, 'C',
+						_ Tooltip, {s: '_fade1 pea disn', direction: 'down', className: 'c1'},
+							_ {s: 'whn p10_20'}, 'This is a tooltip'
+
 
 
 

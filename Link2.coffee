@@ -12,5 +12,5 @@ export default Link = ({href, scroll = false, target, rel, children, ...rest}) -
   router = useRouter()
   hrefToUse = if _type(href) == 'String' then href else prepareNavigate router, href
 
-  _ NextLink, {href: hrefToUse, prefetch: false, shallow: true, target, rel, ...rest},
+  _ NextLink, {href: hrefToUse, prefetch: false, shallow: true, target, rel, scroll, ...rest},
     children
