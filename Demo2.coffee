@@ -9,6 +9,7 @@ import LinkButton from './LinkButton2'
 import Spinner from './Spinner2'
 import Tooltip from './Tooltip'
 import Switch from './Switch2'
+import Calendar from './Calendar'
 
 import {useFela, colors} from 'setup'
 
@@ -20,6 +21,7 @@ export default Demo = () ->
 		_ SwitchDemo, {}
 		_ TooltipDemo, {}
 		_ SpinnerDemo, {}
+		_ CalendarDemo, {}
 
 
 Box = ({title, children}) -> 
@@ -27,17 +29,16 @@ Box = ({title, children}) ->
 		_ {s: 'posa top-10 bgbk bordbk-1 p2_10 br3 fawh-97-14'}, title
 		children
 
-Box1 = ({title, children}) -> 
+Box1 = ({s, title, children}) -> 
 	_ {s: 'borlbk-1 p30_10_10_10 m20 posr'},
 		_ {s: 'posa top-10 lef-5 bgbk>5 bordbk-1 p2_10 br3 fawh-97-14'}, title
-		children
+		_ {s: "#{s}"},
+			children
 
-Item = ({desc, children}) ->
-	_ {s: 'mb20'},
+Item = ({s, desc, children}) ->
+	_ {s: "mb20 #{s}"},
 		children
 		if desc then _ {s: 'fabk-36-12'}, desc
-
-
 
 
 ButtonDemo = () ->
@@ -260,10 +261,21 @@ TooltipDemo = () ->
 						_ Tooltip, {s: '_fade1 pea disn', direction: 'down', className: 'c1'},
 							_ {s: 'whn p10_20'}, 'This is a tooltip'
 
+CalendarDemo = () ->
+	[date, setDate] = useState null
 
+	onChange = (newDate) -> setDate newDate
 
-
-
+	_ Box, {title: 'Calendar'},
+		_ Box1, {title: 'scale', s: 'xr__'},
+			_ Item, {desc: 'scale 1.0 = default', s: 'mr20'},
+				_ Calendar, {selected: date, onChange}
+			_ Item, {desc: 'scale 0.8'},
+				_ Calendar, {selected: date, onChange, scale: 0.8}
+		_ Box1, {title: 'how it works'},
+			_ {s: 'xrc_ bg5'},
+				_ Item, {desc: 'dev = true', s: 'mr20'},
+					_ Calendar, {selected: date, onChange, dev: true}
 
 
 
