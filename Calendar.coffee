@@ -32,22 +32,23 @@ months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 # animation from 2021 to 2026.
 # It seems to work well, but not yet tested on weeks in skyview.
 export default Calendar = ({selected, onChange, scale = 1.0, dev = false}) ->
-	[items, setItems] = useState [-1, 0, 1]
+	[items, setItems] = useState [-2, -1, 0, 1, 2] # arbitrary items to enable animation
 	startYear = selected && parseInt(df.format('YYYY', selected)) || parseInt(df.format('YYYY', Date.now()))
-	[years, setYears] = useState [null, startYear, null]
+	[years, setYears] = useState [null, null, startYear, null, null]
 
 	useEffect () ->
+		# If selected changes, scroll it into view
 		newYear = parseInt df.format('YYYY', selected)
 
-		if newYear == years[1] then # do nothing
-		else if newYear == years[2] then goRight()
-		else if newYear == years[0] then goLeft()
-		else if newYear < years[1]
-			setYears [null, newYear, years[1]]
-			animateLeft()
-		else if newYear > years[1]
-			setYears [years[1], newYear, null]
-			animateRight()
+		if newYear == years[2] then # do nothing
+		else if newYear == years[3] then rightClick()
+		else if newYear == years[1] then leftClick()
+		else if newYear < years[2]
+			setYears [null, null, newYear, newYear+1, years[2]]
+			animateLeft 2
+		else if newYear > years[2]
+			setYears [years[2], newYear-1, newYear, null, null]
+			animateRight 2
 
 	, [selected]
 
@@ -56,15 +57,17 @@ export default Calendar = ({selected, onChange, scale = 1.0, dev = false}) ->
 	size = 250 * scale
 	stiffness = dev && 30 || 230
 
-	animateLeft = () -> setItems $ items, _map (x) -> x - 1
-	animateRight = () -> setItems $ items, _map (x) -> x + 1
+	
+
+	animateLeft = (steps = 1) -> setItems $ items, _map (x) -> x - steps
+	animateRight = (steps = 1) -> setItems $ items, _map (x) -> x + steps
 
 	leftClick = () ->
-		setYears [null, years[1]-1, years[1]]
+		setYears [null, null, years[2]-1, years[2], null]
 		animateLeft()
 
 	rightClick = () ->
-		setYears [years[1], years[1]+1, null]
+		setYears [null, years[2], years[2]+1, null, null]
 		animateRight()
 
 	onClick = (date) -> 
@@ -73,27 +76,27 @@ export default Calendar = ({selected, onChange, scale = 1.0, dev = false}) ->
 	_ {s: "w#{size} h#{size} bgbuc-9 br6 xc__ #{!dev && 'ovh'}"},
 		_ {s: 'xrac bgbuc-9 h25% br6'},
 			_ {s: 'ho(bgbuc<1-9) br6 xrcc p3% curp', onClick: leftClick},
-				_ SVGarrow, {s: 'w28 fillwh-8 rot90'}
-			_ {s: 'fawh-97-18 useln'}, years[1]
+				_ SVGarrow, {s: "w#{scale * 28} fillwh-8 rot90"}
+			_ {s: "fawh-97-#{Math.ceil scale*18} useln"}, years[2]
 			_ {s: 'ho(bgbuc<1-9) br6 xrcc p3% curp', onClick: rightClick},
-				_ SVGarrow, {s: 'w28 fillwh-8 rot270'}
+				_ SVGarrow, {s: "w#{scale * 28} fillwh-8 rot270"}
 
 		_ Flipper, {flipKey, spring: {stiffness, damping: 23}, className: 'flipperBase'},
 			items.map (item, idx) ->
 				_ Flipped, {key: item, flipId: item},
-					_ Year, {year: years[idx], selected, onClick, dev}
+					_ Year, {year: years[idx], selected, onClick, scale, dev}
 
-Year = ({year, selected, onClick, dev, ...flippedProps}) ->
+Year = ({year, selected, onClick, scale, dev, ...flippedProps}) ->
 	_ {s: 'w33.33% xg1 xc__ posr', ...flippedProps},
 		if year
 			_ {s: 'p5% xrbcw xg1'},
 				$ months, _map (month) ->
-					_ Month, {key: month, year, month, selected, onClick, dev}
+					_ Month, {key: month, year, month, selected, onClick, scale, dev}
 
-Month = ({year, month, selected, onClick, dev}) ->
+Month = ({year, month, selected, onClick, scale, dev}) ->
 	date = df.yyyymmdd "#{year}-#{month}-01"
 	isSelected = df.isSame date, selected, 'month'
 	sSelected = isSelected && 'bgbuc<1 fawh ho(bgbuc<1)'
 	text = _toUpper(df.format 'MMM', date) + if dev then date[3] else ''
-	_ {s: "w24% h32% xrcc tac fawh-87-12 useln ho(bgbuc-9 fawh) br6 curp #{sSelected}",
+	_ {s: "w24% h32% xrcc tac fawh-87-#{Math.ceil scale*12} useln ho(bgbuc-9 fawh) br6 curp #{sSelected}",
 	onClick: () -> onClick date}, text
