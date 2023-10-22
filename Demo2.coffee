@@ -16,12 +16,12 @@ import {useFela, colors} from 'setup'
 export default Demo = () ->
 	_ {},
 		# _ {}, 'test123'
-		_ CalendarDemo, {}
 		_ ButtonDemo, {}
 		_ LinkButtonDemo, {}
 		_ SwitchDemo, {}
 		_ TooltipDemo, {}
 		_ SpinnerDemo, {}
+		_ CalendarDemo, {}
 
 
 Box = ({title, children}) -> 

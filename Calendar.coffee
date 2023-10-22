@@ -31,24 +31,27 @@ months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 # If we want to move many years we do the same; add 1 to items and setYears to [2021, 2026, null] to see the
 # animation from 2021 to 2026.
 # It seems to work well, but not yet tested on weeks in skyview.
+# NOTE: It is possible to render 5 items so if scrolling many units, render a dummy inbetween so that if feels
+#	like it's scrolling more than just the same amout as 1 year. To try it out, check commit of 2023-10-22 but
+# it felt like too much was scrolling so decided to not use that idea.
 export default Calendar = ({selected, onChange, scale = 1.0, dev = false}) ->
-	[items, setItems] = useState [-2, -1, 0, 1, 2] # arbitrary items to enable animation
+	[items, setItems] = useState [-1, 0, 1] # arbitrary items to enable animation
 	startYear = selected && parseInt(df.format('YYYY', selected)) || parseInt(df.format('YYYY', Date.now()))
-	[years, setYears] = useState [null, null, startYear, null, null]
+	[years, setYears] = useState [null, startYear, null]
 
 	useEffect () ->
 		# If selected changes, scroll it into view
 		newYear = parseInt df.format('YYYY', selected)
 
-		if newYear == years[2] then # do nothing
-		else if newYear == years[3] then rightClick()
-		else if newYear == years[1] then leftClick()
-		else if newYear < years[2]
-			setYears [null, null, newYear, newYear+1, years[2]]
-			animateLeft 2
-		else if newYear > years[2]
-			setYears [years[2], newYear-1, newYear, null, null]
-			animateRight 2
+		if newYear == years[1] then # do nothing
+		else if newYear == years[2] then goRight()
+		else if newYear == years[0] then goLeft()
+		else if newYear < years[1]
+			setYears [null, newYear, years[1]]
+			animateLeft()
+		else if newYear > years[1]
+			setYears [years[1], newYear, null]
+			animateRight()
 
 	, [selected]
 
@@ -59,15 +62,15 @@ export default Calendar = ({selected, onChange, scale = 1.0, dev = false}) ->
 
 	
 
-	animateLeft = (steps = 1) -> setItems $ items, _map (x) -> x - steps
-	animateRight = (steps = 1) -> setItems $ items, _map (x) -> x + steps
+	animateLeft = () -> setItems $ items, _map (x) -> x - 1
+	animateRight = () -> setItems $ items, _map (x) -> x + 1
 
 	leftClick = () ->
-		setYears [null, null, years[2]-1, years[2], null]
+		setYears [null, years[1]-1, years[1]]
 		animateLeft()
 
 	rightClick = () ->
-		setYears [null, years[2], years[2]+1, null, null]
+		setYears [years[1], years[1]+1, null]
 		animateRight()
 
 	onClick = (date) -> 
@@ -77,7 +80,7 @@ export default Calendar = ({selected, onChange, scale = 1.0, dev = false}) ->
 		_ {s: 'xrac bgbuc-9 h25% br6'},
 			_ {s: 'ho(bgbuc<1-9) br6 xrcc p3% curp', onClick: leftClick},
 				_ SVGarrow, {s: "w#{scale * 28} fillwh-8 rot90"}
-			_ {s: "fawh-97-#{Math.ceil scale*18} useln"}, years[2]
+			_ {s: "fawh-97-#{Math.ceil scale*18} useln"}, years[1]
 			_ {s: 'ho(bgbuc<1-9) br6 xrcc p3% curp', onClick: rightClick},
 				_ SVGarrow, {s: "w#{scale * 28} fillwh-8 rot270"}
 

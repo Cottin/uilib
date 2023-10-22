@@ -248,8 +248,8 @@ export default staticStyles = "
 	/* ------------------------------------------------------------------------------------------------- */
 
 	.flipperBase {
-		width: 500%;
-		margin-left: -200%;
+		width: 300%;
+		margin-left: -100%;
 		display: flex;
 		flex-direction: row;
 		flex-grow: 1;
