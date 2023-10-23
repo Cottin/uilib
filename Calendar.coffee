@@ -34,7 +34,7 @@ months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 # NOTE: It is possible to render 5 items so if scrolling many units, render a dummy inbetween so that if feels
 #	like it's scrolling more than just the same amout as 1 year. To try it out, check commit of 2023-10-22 but
 # it felt like too much was scrolling so decided to not use that idea.
-export default Calendar = ({selected, onChange, scale = 1.0, dev = false}) ->
+export default Calendar = ({s, selected, onChange, onClick, className, scale = 1.0, dev = false}) ->
 	[items, setItems] = useState [-1, 0, 1] # arbitrary items to enable animation
 	startYear = selected && parseInt(df.format('YYYY', selected)) || parseInt(df.format('YYYY', Date.now()))
 	[years, setYears] = useState [null, startYear, null]
@@ -44,8 +44,8 @@ export default Calendar = ({selected, onChange, scale = 1.0, dev = false}) ->
 		newYear = parseInt df.format('YYYY', selected)
 
 		if newYear == years[1] then # do nothing
-		else if newYear == years[2] then goRight()
-		else if newYear == years[0] then goLeft()
+		else if newYear == years[2] then rightClick()
+		else if newYear == years[0] then leftClick()
 		else if newYear < years[1]
 			setYears [null, newYear, years[1]]
 			animateLeft()
@@ -73,10 +73,10 @@ export default Calendar = ({selected, onChange, scale = 1.0, dev = false}) ->
 		setYears [years[1], years[1]+1, null]
 		animateRight()
 
-	onClick = (date) -> 
+	onClickDate = (date) -> 
 		onChange?(date)
 
-	_ {s: "w#{size} h#{size} bgbuc-9 br6 xc__ #{!dev && 'ovh'}"},
+	_ {s: "w#{size} h#{size} bgbuc>1 br6 xc__ #{!dev && 'ovh'} #{s}", className, onClick},
 		_ {s: 'xrac bgbuc-9 h25% br6'},
 			_ {s: 'ho(bgbuc<1-9) br6 xrcc p3% curp', onClick: leftClick},
 				_ SVGarrow, {s: "w#{scale * 28} fillwh-8 rot90"}
@@ -87,19 +87,19 @@ export default Calendar = ({selected, onChange, scale = 1.0, dev = false}) ->
 		_ Flipper, {flipKey, spring: {stiffness, damping: 23}, className: 'flipperBase'},
 			items.map (item, idx) ->
 				_ Flipped, {key: item, flipId: item},
-					_ Year, {year: years[idx], selected, onClick, scale, dev}
+					_ Year, {year: years[idx], selected, onClickDate, scale, dev}
 
-Year = ({year, selected, onClick, scale, dev, ...flippedProps}) ->
+Year = ({year, selected, onClickDate, scale, dev, ...flippedProps}) ->
 	_ {s: 'w33.33% xg1 xc__ posr', ...flippedProps},
 		if year
 			_ {s: 'p5% xrbcw xg1'},
 				$ months, _map (month) ->
-					_ Month, {key: month, year, month, selected, onClick, scale, dev}
+					_ Month, {key: month, year, month, selected, onClickDate, scale, dev}
 
-Month = ({year, month, selected, onClick, scale, dev}) ->
+Month = ({year, month, selected, onClickDate, scale, dev}) ->
 	date = df.yyyymmdd "#{year}-#{month}-01"
 	isSelected = df.isSame date, selected, 'month'
 	sSelected = isSelected && 'bgbuc<1 fawh ho(bgbuc<1)'
 	text = _toUpper(df.format 'MMM', date) + if dev then date[3] else ''
-	_ {s: "w24% h32% xrcc tac fawh-87-#{Math.ceil scale*12} useln ho(bgbuc-9 fawh) br6 curp #{sSelected}",
-	onClick: () -> onClick date}, text
+	_ {s: "w24% h32% xrcc tac fawh-87-#{Math.ceil scale*13} useln ho(bgbuc-9 fawh) br6 curp #{sSelected}",
+	onClick: () -> onClickDate date}, text
