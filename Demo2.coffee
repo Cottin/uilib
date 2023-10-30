@@ -8,20 +8,23 @@ import Button from './Button2'
 import LinkButton from './LinkButton2'
 import Spinner from './Spinner2'
 import Tooltip from './Tooltip'
+import Dropdown from './Dropdown'
 import Switch from './Switch2'
 import Calendar from './Calendar'
+import Textbox from './Textbox'
 
 import {useFela, colors} from 'setup'
 
 export default Demo = () ->
 	_ {},
-		# _ {}, 'test123'
-		_ ButtonDemo, {}
+		_ CalendarDemo, {}
 		_ LinkButtonDemo, {}
+		_ TextboxDemo, {}
+		_ DropdownDemo, {}
 		_ SwitchDemo, {}
+		_ ButtonDemo, {}
 		_ TooltipDemo, {}
 		_ SpinnerDemo, {}
-		_ CalendarDemo, {}
 
 
 Box = ({title, children}) -> 
@@ -36,7 +39,7 @@ Box1 = ({s, title, children}) ->
 			children
 
 Item = ({s, desc, children}) ->
-	_ {s: "mb20 #{s}"},
+	_ {s: "mb20 #{s} xc__"},
 		children
 		if desc then _ {s: 'fabk-36-12'}, desc
 
@@ -176,6 +179,37 @@ SwitchDemo = () ->
 				_ {s: 'bgbk p10'},
 					_ Switch, {s: 'mr15', look: 'dark', scale: 0.8, value: flag, onChange: (val) -> setFlag val}
 
+TextboxDemo = () ->
+	[text, setText] = useState 'test'
+
+	onChange = (newText) ->
+		console.log 'onChange', newText
+		setText newText
+
+	_ Box, {title: 'Textbox'},
+		_ Box1, {title: 'kind = box (default)'},
+			_ Item, {desc: ''},
+				_ Textbox, {s: 'xw200', placeholder: 'Write something', value: text, onChange}
+		_ Box1, {title: 'kind = soft'},
+			_ Item, {desc: ''},
+				_ Textbox, {s: 'xw200', kind: 'soft', placeholder: 'Write something', value: text, onChange}
+			_ Item, {desc: 'mask = number'},
+				_ Textbox, {s: 'xw200', kind: 'soft', mask: 'number', placeholder: 'Write something', value: text, onChange}
+
+DropdownDemo = () ->
+	countries = [{text: 'Sweden'}, {text: 'Norway'}, {text: 'Denmark'}, {text: 'Finland'}, {text: 'Iceland'}]
+	[selected, setSelected] = useState null
+
+	onChange = (item) ->
+		setSelected item
+
+	_ Box, {title: 'Dropdown'},
+		_ Box1, {title: ''},
+			_ Item, {desc: ''},
+				_ Dropdown, {s: 'xw200', placeholder: 'Select country', items: countries, onChange, selected}
+			_ Item, {desc: ''},
+				_ Dropdown, {s: 'xw200', placeholder: 'Select country', error: true, items: countries, onChange, selected}
+
 SpinnerDemo = () ->
 	_ Box, {title: 'Spinner'},
 		_ Item, {desc: 'kind: jumpingBalls'},
@@ -263,19 +297,34 @@ TooltipDemo = () ->
 
 CalendarDemo = () ->
 	[date, setDate] = useState null
+	[span, setSpan] = useState ['2023-10-03', '2023-10-14']
+	# [span, setSpan] = useState ['2023-10-03', '2023-10-14']
 
 	onChange = (newDate) -> setDate newDate
+	onChangeSpan = (newSpan) -> setSpan newSpan
 
 	_ Box, {title: 'Calendar'},
-		_ Box1, {title: 'scale', s: 'xr__'},
+		_ Box1, {title: 'mode = month', s: 'xr__'},
 			_ Item, {desc: 'scale 1.0 = default', s: 'mr20'},
 				_ Calendar, {selected: date, onChange}
-			_ Item, {desc: 'scale 0.8'},
+			_ Item, {desc: 'scale 0.8', s: 'mr20'},
 				_ Calendar, {selected: date, onChange, scale: 0.8}
+			_ Item, {desc: 'scale 1.2', s: 'mr20'},
+				_ Calendar, {selected: date, onChange, scale: 1.2}
+
+		_ Box1, {title: 'selected = [] (range)', s: 'xr__'},
+			_ Item, {desc: '', s: 'mr20'},
+				_ Calendar, {selected: span, onChange: onChangeSpan}
+
+		_ Box1, {title: 'mode = month (default)', s: 'xr__'},
+			_ Item, {desc: 'scale 1.0 = default', s: 'mr20'},
+				_ Calendar, {selected: date, mode: 'year', onChange}
+			_ Item, {desc: 'scale 0.8'},
+				_ Calendar, {selected: date, mode: 'year', onChange, scale: 0.8}
 		_ Box1, {title: 'how it works'},
 			_ {s: 'xrc_ bg5'},
 				_ Item, {desc: 'dev = true', s: 'mr20'},
-					_ Calendar, {selected: date, onChange, dev: true, scale: 0.6}
+					_ Calendar, {selected: date, mode: 'year', onChange, dev: true, scale: 0.6}
 
 
 
