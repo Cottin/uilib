@@ -1,4 +1,8 @@
-import React, {useState} from 'react'
+ #auto_require: _esramda
+import {mapI, $} from "ramda-extras" #auto_require: esramda-extras
+
+import React, {useState, useRef, useEffect, useLayoutEffect} from 'react'
+import {Flipper, Flipped} from "react-flip-toolkit"
 
 import SVGgoogle from 'icons/google.svg'
 import {useCall2} from 'uilib/reactUtils'
@@ -12,11 +16,13 @@ import Dropdown from './Dropdown'
 import Switch from './Switch2'
 import Calendar from './Calendar'
 import Textbox from './Textbox'
+import LineChart from './LineChart'
 
 import {useFela, colors} from 'setup'
 
 export default Demo = () ->
 	_ {},
+		_ LineChartDemo, {}
 		_ CalendarDemo, {}
 		_ LinkButtonDemo, {}
 		_ TextboxDemo, {}
@@ -27,13 +33,13 @@ export default Demo = () ->
 		_ SpinnerDemo, {}
 
 
-Box = ({title, children}) -> 
-	_ {s: 'bgwh bordbk-1 p30_10_10_10 m20 posr'},
+Box = ({title, s, children}) -> 
+	_ {s: "bgwh bordbk-1 p30_10_10_10 m20 posr #{s}"},
 		_ {s: 'posa top-10 bgbk bordbk-1 p2_10 br3 fawh-97-14'}, title
 		children
 
-Box1 = ({s, title, children}) -> 
-	_ {s: 'borlbk-1 p30_10_10_10 m20 posr'},
+Box1 = ({s, s2, title, children}) -> 
+	_ {s: "borlbk-1 p30_10_10_10 m20 posr #{s2}"},
 		_ {s: 'posa top-10 lef-5 bgbk>5 bordbk-1 p2_10 br3 fawh-97-14'}, title
 		_ {s: "#{s}"},
 			children
@@ -325,6 +331,68 @@ CalendarDemo = () ->
 			_ {s: 'xrc_ bg5'},
 				_ Item, {desc: 'dev = true', s: 'mr20'},
 					_ Calendar, {selected: date, mode: 'year', onChange, dev: true, scale: 0.6}
+
+
+labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep']
+
+data = [
+	$ [152, 169, 134, 104, 140, 159, 182, 192, 191], mapI (value, i) -> {label: labels[i], value}
+	$ [102, 154, 114, 144, 160, 130, 120, 102, 91], mapI (value, i) -> {label: labels[i], value}
+	$ [80, 132, 124, 134, 110, 120], mapI (value, i) -> {label: labels[i], value}
+	$ [83, 112, 164, 174, 140, 110], mapI (value, i) -> {label: labels[i], value}
+]
+
+
+chartLook =
+	circle:
+		default:
+			fill: colors 'gyc'
+		hover:
+			r: 9
+
+LineChartDemo = () ->
+	[dataIdx, setDataIdx] = useState 0
+	[selectedIdx, setSelectedIdx] = useState 2
+
+	onSwitch = () ->
+		setDataIdx if dataIdx == data.length - 1 then 0 else dataIdx + 1
+
+	onClick = (point) ->
+		setSelectedIdx point.idx
+
+	dataToUse = $ data[dataIdx], mapI (o, i) -> {...o, ...(i == selectedIdx && {selected: true} || {})}
+
+	_ Box, {title: 'LineChart', s: 'bgbe'},
+		_ Box1, {title: 'Basic'},
+			_ Item, {desc: '', s: 'xg1 h300'},
+				_ LineChart, {data: dataToUse, s: '_sh6', look: chartLook, onClick}
+				_ Button, {s: 'w80 mt20', kind: 'rounded', onClick: onSwitch}, 'Switch'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

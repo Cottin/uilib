@@ -1,7 +1,7 @@
 import always from "ramda/es/always"; import equals from "ramda/es/equals"; import flip from "ramda/es/flip"; import init from "ramda/es/init"; import isNil from "ramda/es/isNil"; import map from "ramda/es/map"; import type from "ramda/es/type"; import without from "ramda/es/without"; #auto_require: esramda
 import {change, diff, isNilOrEmpty, sf2} from "ramda-extras" #auto_require: esramda-extras
 
-import React, {useState, useEffect} from 'react'
+import React, {useState, useEffect, useRef} from 'react'
 
 import {_} from 'setup'
 
@@ -38,6 +38,15 @@ export useOnceState = (state) ->
 	, [JSON.stringify state]
 
 	return onceState
+
+# Stores let value passed last time
+# https://blog.logrocket.com/accessing-previous-props-state-react-hooks/
+export usePreviousValue = (value) ->
+	ref = useRef()
+	useEffect ->
+		ref.current = value
+		return undefined
+	return ref.current
 
 # Window callbacks (eg. mouseMove, mouseUp) closes over state so you'll get stale values in the callback.
 # The workaround here is to duplicate the state to a ref that can be used as expected in a window callback.
