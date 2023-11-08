@@ -76,7 +76,7 @@ export default Pie = React.memo ({s, s2, items, Label, children, onHover = null,
 
 		for item in items || []
 			percentFrom = totalPercent
-			itemPercent = item.value / totalValue * 100
+			itemPercent = if totalValue == 0 then 100 else item.value / totalValue * 100
 			totalPercent += itemPercent
 			percentTo = totalPercent
 			realPercent = percentFrom + (percentTo - percentFrom) / 2
