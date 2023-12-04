@@ -1,4 +1,4 @@
- #auto_require: _esramda
+import _map from "ramda/es/map"; import _replace from "ramda/es/replace"; import _toPairs from "ramda/es/toPairs"; #auto_require: _esramda
 import {mapI, $} from "ramda-extras" #auto_require: esramda-extras
 
 import React, {useState, useRef, useEffect, useLayoutEffect} from 'react'
@@ -17,6 +17,7 @@ import Switch from './Switch2'
 import Calendar from './Calendar'
 import Textbox from './Textbox'
 import LineChart from './LineChart'
+import icons from 'icons'
 
 import {useFela, colors} from 'setup'
 
@@ -31,6 +32,7 @@ export default Demo = () ->
 		_ ButtonDemo, {}
 		_ TooltipDemo, {}
 		_ SpinnerDemo, {}
+		_ IconDemo, {}
 
 
 Box = ({title, s, children}) -> 
@@ -369,9 +371,14 @@ LineChartDemo = () ->
 				_ Button, {s: 'w80 mt20', kind: 'rounded', onClick: onSwitch}, 'Switch'
 
 
-
-
-
+IconDemo = () ->
+	_ Box, {title: 'Icons', s: ''},
+		_ Item, {desc: '', s: 'xg1'},
+			_ {s: 'xr__w'},
+				$ icons, _toPairs, _map ([key, icon]) ->
+					_ {s: 'xccc p10 ho(bgbk-1) br4 _fade1 hoc1(bg1)', key},
+						_ icon.default, {s: 'w25 h25', className: 'c1'}
+						_ {s: 'fabk-66-11 mt2'}, $ key, _replace(/^SVG/, '')
 
 
 
