@@ -14,7 +14,7 @@ toMask = (mask) ->
 
 export default Textbox = ({s, kind = 'box', type = 'text', mask, onChange, onEnter, onKeyDown, error, value,
 	...rest}) ->
-	sBase = 'outgyc-2 fo(outgyc-4) bord0 bgwh xg1 fabka7-14 p10_15 _fade3 _textboxPlaceholder'
+	sBase = 'outgyc-2 fo(outgyc-8_2) bord0 bgwh xg1 fabka7-14 p10_15 _fade3 _textboxPlaceholder'
 	sError = if error then 'outrec_3 fo(outrec_3)' else ''
 
 	maskRE = mask && toMask mask
