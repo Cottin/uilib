@@ -92,7 +92,9 @@ calcHeightAndHide = () ->
 	heightPercent = window.innerHeight / window.document.body.scrollHeight
 	height = heightPercent * window.innerHeight
 
-	hide = window.document.body.scrollHeight == window.innerHeight
+	# For some reason scrollHeight is sometimes 1 px bigger than innerHeight when resizing the window.
+	# Adding 5 extra pixels seems to be a good enough workaround
+	hide = window.document.body.scrollHeight <= window.innerHeight + 5
 
 	return {height, hide}
 
@@ -106,15 +108,18 @@ calcScrollBar = () ->
 
 
 export default FakeScroll = ({sOut = 'bgbk-2', sOver = 'bgbk-5'}) ->
-	[{top, height, hide}, setScroll] = useState {top: 0, height: 0, hide: true}
+	ref = useRef {top: 0, height: 0, hide: true}
 	refDrag = useRef null
 	[forceUpdateCount, setForceUpdateCount] = useState 0
 	forceUpdate = () -> setForceUpdateCount (x) -> x + 1
 
 	useEffect () ->
-		onScroll = () -> setScroll calcScrollBar()
+		onScroll = () ->
+			ref.current = calcScrollBar()
+			forceUpdate()
 
-		setScroll calcScrollBar()
+		ref.current = calcScrollBar()
+		forceUpdate()
 
 		window.removeEventListener 'scroll', onScroll
 		window.addEventListener 'scroll', onScroll, { passive: true }
@@ -124,10 +129,12 @@ export default FakeScroll = ({sOut = 'bgbk-2', sOver = 'bgbk-5'}) ->
 		sizeCheck = () -> 
 			# Can't find an event for when scrollHeight changes so polling as a workaround
 			check = calcHeightAndHide()
+			{height, hide} = ref.current
 			if check.height != height || check.hide != hide
-				setScroll (current) -> {...current, height: check.height, hide: check.hide}
+				ref.current = {...ref.current, height: check.height, hide: check.hide}
+				forceUpdate()
 
-		timeout = window.setTimeout sizeCheck, 100 # one extra at 100 for nicer initial load
+		timeout = window.setTimeout sizeCheck, 400 # one extra for nicer initial load
 		interval = window.setInterval sizeCheck, 1000
 
 		return () ->
@@ -158,6 +165,7 @@ export default FakeScroll = ({sOut = 'bgbk-2', sOver = 'bgbk-5'}) ->
 		refDrag.current = null
 
 
+	{top, height, hide} = ref.current
 	sDrag = if refDrag.current then 'rig0' else 'rig-5'
 	sHide = if hide then 'disn'
 	_ {s: "ho(rig0) hoc1(#{sOver}) #{sDrag} useln w20 h#{height}px posf top#{top}px z9999 xre_ #{sHide}"
