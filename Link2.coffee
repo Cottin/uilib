@@ -8,9 +8,9 @@ import NextLink from 'next/link'
 import {prepareNavigate} from 'comon/client/clientUtils'
 
 
-export default Link = ({href, scroll = false, target, rel, children, ...rest}) ->
+export default Link = ({href, scroll = false, post = null, target, rel, children, ...rest}) ->
   router = useRouter()
-  hrefToUse = if _type(href) == 'String' then href else prepareNavigate router, href
+  hrefToUse = if _type(href) == 'String' then href else prepareNavigate(router, href, post)
 
   _ NextLink, {href: hrefToUse, prefetch: false, shallow: true, target, rel, scroll, ...rest},
     children

@@ -9,7 +9,7 @@ import {_} from 'setup'
 
 export default Link = ({href, spec, children, ...rest}) ->
   router = useRouter()
-  hrefToUse = if spec then prepareNavigate router, spec else href
+  hrefToUse = if spec then prepareNavigate(router, spec) else href
 
   _ NextLink, {href: hrefToUse, prefetch: false, shallow: true, ...rest},
     children
