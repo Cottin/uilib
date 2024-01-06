@@ -17,10 +17,13 @@ export default Button = ({s, sChildren: sChildrenProp, sBg: sBgProp, kind, look 
 	sBg = "br3 iw100% h100% posa z1"
 	sChildren = "z2 posr"
 	spinnerClr = 'wh'
+	sSpinner = ''
+	sSuccess = ''
 
 	fSize = Math.round 15 * scale
 	pvSize = Math.round 8 * scale
 	phSize = Math.round 25 * scale
+	phSize1 = Math.round 18 * scale
 
 
 	if kind == 'login'
@@ -45,6 +48,12 @@ export default Button = ({s, sChildren: sChildrenProp, sBg: sBgProp, kind, look 
 			sChildren += " fabka-86-15 w100%"
 
 			spinnerClr = 'bue'
+
+	else if kind == 'hover'
+		sButton += " br3 fabk-47-#{fSize} #{!disabled && 'hofo(fabk-57-'+fSize+' out0) hofoc4(bggn)'} _fade1"
+		sChildren += " br22 p#{pvSize}_#{phSize1}"
+		if wait || success
+			sBg += " bggn"
 
 	else if kind == 'pill'
 		sButton += " br22 #{!disabled && 'hofo(scale1.02 out0)'} _fade1"
@@ -104,12 +113,17 @@ export default Button = ({s, sChildren: sChildrenProp, sBg: sBgProp, kind, look 
 
 	else if kind == 'link'
 		sButton += " #{disabled && 'op0.3'} _fade1"
+		sSpinner += "h120% m-10%"
+		sSuccess += "h120% m-10%"
 
 
 		sKind = "lh110%"
 
 		if look == 'default'
 			sChildren += " fabuk-67-#{fSize} borbbuk-2 ho(fabuk borbbuk-7)"
+			spinnerClr = 'buk'
+		else if look == 'noLine'
+			sChildren += " fabuk-67-#{fSize} ho(fabuk)"
 			spinnerClr = 'buk'
 
 
@@ -135,11 +149,10 @@ export default Button = ({s, sChildren: sChildrenProp, sBg: sBgProp, kind, look 
 	if wait || success
 		sBg += " br50% iw20"
 
-
-	_ 'button', {s: "#{sButton} #{s}", ...extra, ...rest},
+	_ 'button', {s: "#{sButton} #{s}", className, ...extra, ...rest},
 		_ {s: "#{sBg} #{sBgProp}", className: "c4 spinnerBg #{success && 'spinnerScale'}"},
-			if wait then _ Spinner, {s: 'p2', clr: spinnerClr}
-			else if success then _ Checkmark, {s: 'h100%', clr: spinnerClr}
+			if wait then _ Spinner, {s: "p2 #{sSpinner}", clr: spinnerClr}
+			else if success then _ Checkmark, {s: "#{sSuccess}", clr: spinnerClr}
 
 		_ {s: "#{sChildren} #{sChildrenProp}", className: 'c5'},
 			children
