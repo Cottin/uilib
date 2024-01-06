@@ -1,10 +1,12 @@
-import _map from "ramda/es/map"; import _replace from "ramda/es/replace"; import _toPairs from "ramda/es/toPairs"; #auto_require: _esramda
+import _equals from "ramda/es/equals"; import _map from "ramda/es/map"; import _replace from "ramda/es/replace"; import _toPairs from "ramda/es/toPairs"; #auto_require: _esramda
 import {mapI, $} from "ramda-extras" #auto_require: esramda-extras
 
 import React, {useState, useRef, useEffect, useLayoutEffect} from 'react'
 import {Flipper, Flipped} from "react-flip-toolkit"
-
+import dynamic from 'next/dynamic'
+ 
 import SVGgoogle from 'icons/google.svg'
+import SVGpen from 'icons/pen.svg'
 import {useCall2} from 'uilib/reactUtils'
 import {sleep} from 'comon/shared'
 
@@ -21,14 +23,24 @@ import icons from 'icons'
 
 import {useFela, colors} from 'setup'
 
+LoadingSkel = () ->
+	_ {s: 'w100% _skelbk-2 fabk-47-14 fsi p10_15 outgyc-2 bgwh br4'}, 'Loading currencies'
+
+```
+const DynamicDropdownCurrency = dynamic(() => import('./DropdownCurrency'), {
+	ssr: false,
+	loading: () => <LoadingSkel />,
+})
+```
+
 export default Demo = () ->
 	_ {},
 		_ LineChartDemo, {}
 		_ CalendarDemo, {}
-		_ LinkButtonDemo, {}
 		_ TextboxDemo, {}
 		_ DropdownDemo, {}
 		_ SwitchDemo, {}
+		_ LinkButtonDemo, {}
 		_ ButtonDemo, {}
 		_ TooltipDemo, {}
 		_ SpinnerDemo, {}
@@ -101,6 +113,21 @@ ButtonDemo = () ->
 					_ {s: 'mr10'},
 						_ Button, {s: 'mb20', kind: 'rounded', look: 'text', onClick, wait, success, disabled: true}, 'Cancel'
 
+		_ Box1, {title: 'Kind = hover'},
+
+			_ Item, {desc: 'look: default'},
+				_ {s: 'xr__'},
+					_ {s: 'mr10 h80'},
+						_ Button, {s: 'mb20', kind: 'hover', scale: 1, onClick, wait, success}, 'Edit'
+					_ {s: 'mr10 h80'},
+						_ Button, {s: 'mb20', kind: 'hover', scale: 1.1, onClick, wait, success}, 'Edit'
+					_ {s: 'mr10 h80'},
+						_ Button, {s: 'mb20', kind: 'hover', scale: 0.9, onClick, wait, success}, 'Edit'
+					_ {s: 'mr10 h80'},
+						_ Button, {s: 'mb20 hofoc1(fillwh)', sChildren: 'xr_c', kind: 'hover', scale: 0.9, onClick, wait, success},
+							_ SVGpen, {s: 'fillbk-3 w20 mr8 _fade1', className: 'c1'}
+							_ {}, 'Edit'
+
 		_ Box1, {title: 'Kind = login'},
 
 			_ Item, {desc: 'look: default'},
@@ -142,6 +169,9 @@ ButtonDemo = () ->
 			_ Item, {desc: 'look: default'},
 				_ {s: 'xr__'},
 					_ Button, {kind: 'link', onClick, wait, success, s: 'mr10'}, 'Link'
+			_ Item, {desc: 'look: noLine'},
+				_ {s: 'xr__'},
+					_ Button, {kind: 'link', look: 'noLine', onClick, wait, success, s: 'mr10'}, 'Link'
 
 		_ Box1, {title: 'Kind = small'},
 			_ Item, {desc: 'look: default'},
@@ -205,7 +235,10 @@ TextboxDemo = () ->
 				_ Textbox, {s: 'xw200', kind: 'soft', mask: 'number', placeholder: 'Write something', value: text, onChange}
 
 DropdownDemo = () ->
-	countries = [{text: 'Sweden'}, {text: 'Norway'}, {text: 'Denmark'}, {text: 'Finland'}, {text: 'Iceland'}]
+	countries = [
+		{text: 'Sweden', continent: 'Europe'}, {text: 'Norway', continent: 'Europe'},
+		{text: 'Denmark', continent: 'Europe'}, {text: 'Finland', continent: 'Europe'},
+		{text: 'Iceland', continent: 'Europe'}, {text: 'Northern Mariana Islands', continent: 'Unknown'}]
 	[selected, setSelected] = useState null
 
 	onChange = (item) ->
@@ -217,6 +250,59 @@ DropdownDemo = () ->
 				_ Dropdown, {s: 'xw200', placeholder: 'Select country', items: countries, onChange, selected}
 			_ Item, {desc: ''},
 				_ Dropdown, {s: 'xw200', placeholder: 'Select country', error: true, items: countries, onChange, selected}
+		_ Box1, {title: 'custom items'},
+			_ Item, {desc: ''},
+				_ Dropdown, {s: 'xw200', placeholder: 'Select country', items: countries, onChange, selected,
+				renderSelected: () ->
+					_ {s: 'xc_s'},
+						_ {}, selected.text
+						_ {s: 'fabk-46-11'}, selected.continent
+				renderItem: ({item, idx, i}) ->
+						sIdx = idx == i && 'bggyb-5'
+						sSel = _equals(selected, item) && "bgbue fawh ho(bgbue<1) #{idx == i && 'bgbue<1'}"
+						_ {s: "p10_20 ho(bggyb-5) #{sIdx} #{sSel} _fade3 useln whn", key: item.text,
+						onClick: -> onChange item},
+							_ {}, item.text
+							_ {s: 'fabk-46-11'}, item.continent
+				}
+
+
+		# _ Box1, {title: 'Auto complete'},
+		# 	_ Item, {desc: ''},
+		# 		_ Dropdown, {s: 'xw200', placeholder: 'Select country', items: countries, onChange, selected,
+		# 		autoComplete: true}
+		_ AutoCompleteSub, {}
+
+		_ DropdownCurrencySub, {}
+
+
+AutoCompleteSub = () ->
+	words = ['windy', 'wince', 'winch', 'winze', 'winey', 'wined', 'wines', 'wingy', 'wings', 'winos', 'winks', 'winds']
+	[selected, setSelected] = useState null
+
+	onChange = (item) ->
+		console.log 'onChange', item
+		setSelected item
+
+	_ Box1, {title: 'Auto complete'},
+		_ Item, {desc: ''},
+			_ Dropdown, {s: 'xw200', placeholder: 'Select country', items: words, onChange, selected,
+			autoComplete: true}
+
+DropdownCurrencySub = () ->
+	[selected, setSelected] = useState null
+
+	onChange = (item) ->
+		console.log 'onChange', item
+		setSelected item
+
+	didLoad = (countries) ->
+		console.log 'didLoad', countries
+
+	_ Box1, {title: 'Currency'},
+		_ Item, {desc: ''},
+			_ DynamicDropdownCurrency, {s: 'xw200', selected, onChange, didLoad}
+
 
 SpinnerDemo = () ->
 	_ Box, {title: 'Spinner'},
@@ -227,6 +313,9 @@ SpinnerDemo = () ->
 		_ Item, {desc: 'kind: pulse'},
 			_ {s: 'bordbk-3 posr w100 h100 bgbk'},
 				_ Spinner, {kind: 'pulse', clr: 'bue-2', scale: 1.0}
+
+		_ Item, {desc: 'Skeleton'},
+				_ {s: 'h30 w100% _skelbk-2'}
 
 TooltipDemo = () ->
 
