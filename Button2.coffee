@@ -18,7 +18,7 @@ export default Button = ({s, sChildren: sChildrenProp, sBg: sBgProp, kind, look 
 	sChildren = "z2 posr"
 	spinnerClr = 'wh'
 	sSpinner = ''
-	sSuccess = ''
+	sSuccess = 'h100%'
 
 	fSize = Math.round 15 * scale
 	pvSize = Math.round 8 * scale
@@ -113,8 +113,8 @@ export default Button = ({s, sChildren: sChildrenProp, sBg: sBgProp, kind, look 
 
 	else if kind == 'link'
 		sButton += " #{disabled && 'op0.3'} _fade1"
-		sSpinner += "h120% m-10%"
-		sSuccess += "h120% m-10%"
+		sSpinner += " h120% m-10%"
+		sSuccess += " h120% m-10%"
 
 
 		sKind = "lh110%"
