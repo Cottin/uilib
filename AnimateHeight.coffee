@@ -1,5 +1,7 @@
 import React, {useRef, useLayoutEffect} from 'react'
 
+import {useFela} from 'setup'
+
 
 
 # Often in a modal or box the contents / views can change and it's nice to animate that change.
@@ -15,7 +17,7 @@ import React, {useRef, useLayoutEffect} from 'react'
 # This is an ultra simple solution that seems to work fine - so trying this out until proven wrong:
 # https://codesandbox.io/s/react-animate-auto-height-1y5lz?file=/src/App.tsx:1016-1115
 
-export default AnimateHeight = ({children, className}) -> 
+export default AnimateHeight = ({children, className, s}) -> 
   ref = useRef null
 
   useLayoutEffect () ->
@@ -39,5 +41,6 @@ export default AnimateHeight = ({children, className}) ->
     return undefined
   , [children, ref]
 
-  _ {ref, style: {transition: "height 250ms", overflow: "hidden"}, className},
+  # Used {overflow: "hidden"} before but seemed to work just fine without it so it was removed
+  _ {ref, s: "#{s}", style: {transition: "height 250ms"}, className},
     children

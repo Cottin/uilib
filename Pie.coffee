@@ -1,11 +1,13 @@
-import isEmpty from "ramda/es/isEmpty"; import map from "ramda/es/map"; #auto_require: esramda
-import {mapI, sumBy, $} from "ramda-extras" #auto_require: esramda-extras
+import equals from "ramda/es/equals"; import isEmpty from "ramda/es/isEmpty"; import map from "ramda/es/map"; #auto_require: esramda
+import {mapI, sumBy, $, sf0} from "ramda-extras" #auto_require: esramda-extras
 
-import React from 'react'
+import React, {useRef, useState, useEffect, useCallback} from 'react'
 
-import {_} from 'setup'
+import {useFela, colors} from 'setup'
 
-import {useChangeState} from './reactUtils'
+import {useChangeState, memoDeep} from './reactUtils'
+import debounce from 'lodash.debounce'
+import throttle from 'lodash.throttle'
 
 
 # Converts an angle expressed in percent to radians
@@ -52,86 +54,118 @@ getPosition = (e) ->
 	cssPercent = angleToCssPercent angleDegree
 	return [x, y, radius, angleDegree, cssPercent]
 
+
 # Pie chart component
 # onHover: (item) -> # get called when new item is hovered
-# hilight: (item) -> return (item.id == forcedHilightedId) # force a hilight without hovering
+# hilight: (item) -> return (item.id == forcedHilightedId) # Having hard react problems with hilight, use hilighted instead
 # e.g.
 #   items = [{value: 142, color: '#00ff00', hoverColor: '#00cc00'}, ...]
-export default Pie = ({s, items, Label, children, onHover = null, hilight = null, onClick}) ->
-	[st, cs, rs] = useChangeState {degree: null, radius: null, x: null, y: null}
+export default Pie = React.memo ({s, s2, items, Label, children, onHover = null, hilighted = null, onClick, className}) ->
 	childRef = React.useRef null
 	selfRef = React.useRef null
-	hoveredRef = React.useRef null
-	hoveredChangedRef = React.useRef false
 
-	totalValue = $ items || [], sumBy (i) -> i.value
-	gradient = []
-	totalPercent = 0
 
-	data = []
-	idx = 0
+	# Calculates data and gradient based on supplied mouse position
+	calcState = (percent, radius) ->
+		totalValue = $ items || [], sumBy (i) -> i.value
+		gradient = []
+		totalPercent = 0
 
-	for item in items || []
-		percentFrom = totalPercent
-		itemPercent = item.value / totalValue * 100
-		totalPercent += itemPercent
-		percentTo = totalPercent
-		percent = percentFrom + (percentTo - percentFrom) / 2
-		mathPercent = cssPercentToMath percent
+		data = []
+		idx = 0
 
-		childRadius = childRef.current?.firstChild.getBoundingClientRect().width / 2
-		selfRadius = selfRef.current?.getBoundingClientRect().width / 2
+		for item in items || []
+			percentFrom = totalPercent
+			itemPercent = if totalValue == 0 then 100 else item.value / totalValue * 100
+			totalPercent += itemPercent
+			percentTo = totalPercent
+			realPercent = percentFrom + (percentTo - percentFrom) / 2
+			mathPercent = cssPercentToMath realPercent
 
-		color = item.color
-		hoverdByMouse = st.percent >= percentFrom && st.percent <= percentTo && st.radius > childRadius && st.radius < selfRadius
-		if hoverdByMouse
-			if hoveredRef.current != item
-				hoveredRef.current = item
-				hoveredChangedRef.current = true
-			color = item.hoverColor
-		else if hilight? item
-			color = item.hoverColor
+			childRadius = childRef.current?.firstChild.getBoundingClientRect().width / 2
+			selfRadius = selfRef.current?.getBoundingClientRect().width / 2
 
-		labelRadious = (((selfRadius - childRadius) / 2) + childRadius) / selfRadius
+			color = item.color
+			hoverdByMouse = percent >= percentFrom && percent <= percentTo && radius > childRadius && radius < selfRadius
 
-		coords = percentToCoords mathPercent, labelRadious
-		position = $ coordsToPosition(coords.x, coords.y), map (n) -> n * 100
+			if hoverdByMouse
+				color = item.hoverColor
+			else if hilighted == item.id
+				color = item.hoverColor
 
-		data.push {...item, position, percent: Math.round(itemPercent), percentFrom, percentTo, idx: idx++}
+			labelRadious = (((selfRadius - childRadius) / 2) + childRadius) / selfRadius
 
-		gradient.push "#{color} 0 #{totalPercent}%"
+			coords = percentToCoords mathPercent, labelRadious
+			position = $ coordsToPosition(coords.x, coords.y), map (n) -> n * 100
+
+			data.push {...item, position, percent: Math.round(itemPercent), percentFrom, percentTo, idx: idx++}
+
+			gradient.push "#{color} 0 #{totalPercent}%"
+
+		return [data, gradient]
+
+	[initialData, initialGradient] = calcState null, null
+	# Note: don't keep mouse coords in state, it causes rerenders on mouse move
+	# [state, setState] = useState {data: initialData, gradient: initialGradient}
+	[data, setData] = useState initialData
+	[gradient, setGradient] = useState initialGradient
+	refGradient = useRef gradient # duplicate gradient to this ref for performance
+
+	# Need to setState when item changes since component might start with empty items before data has loaded
+	useEffect ->
+		[newInitialData, newInitialGradient] = calcState null, null
+		# setState {data: newInitialData, gradient: newInitialGradient}
+		setData newInitialData
+		setGradient newInitialGradient
+		refGradient.current = newInitialGradient
+		return undefined
+	, [sf0 {items, hilighted}]
+
 
 	getItem = (cssPercent) ->
 		for item in data
 			if item.percentFrom <= cssPercent && item.percentTo >= cssPercent then return item
 
-	mouseMove = (e) ->
-		[x, y, radius, degree, cssPercent] = getPosition e
-		# Item being hovered is now calulated in for-loop in render. Calling onHover from there causes react warning.
-		# Work around by introducing hoveredChangedRef flag. Another solution could be to calc things outside of render.
-		if hoveredChangedRef.current
-			onHover hoveredRef.current
-			hoveredChangedRef.current = false
-		cs {x, y, radius, percent: cssPercent}
+	lastRan = useRef Date.now()
 
-	mouseOut = () ->
-		if hoveredRef.current then onHover null
-		hoveredRef.current = null
-		rs()
+	mouseMove = useCallback (e) ->
+
+		[x, y, radius, degree, cssPercent] = getPosition e
+		[newData, newGradient] = calcState cssPercent, radius
+
+		# It seems mouseMove sometimes get triggered so fast that the stateChange has not yet persisted and
+		# didChange would be true causing unnessecery re-renders.
+		# I experimented with throttling but did not work well.
+		# This solution helps by keeping a ref updated with state and checking changed with that.
+		didChange = !equals refGradient.current, newGradient
+
+		if didChange
+			refGradient.current = newGradient
+			setData newData
+			setGradient newGradient
+			onHover? items[getItem(cssPercent)?.idx] 
+
+	mouseOut = (e) ->
+		[newData, newGradient] = calcState null, null
+		refGradient.current = newGradient
+		setData newData
+		setGradient newGradient
+		onHover null
 
 	onClickSelf = (e) ->
 		[x, y, radius, degree, cssPercent] = getPosition e
-		onClick? items[getItem(cssPercent).idx]
+		idx = getItem(cssPercent)?.idx
+		item = if isNaN idx then null else items[idx]
+		onClick? item, e
 
-	_ {s: s + 'bgbe br50%'},
-		_ {s: 'w100% pt100% br50% xrcc z2 sh0_1_3_0_bk-4 posr ho(scale1.05) _fade1', ref: selfRef,
-		style: {background: if isEmpty gradient then _.colors('beb-5') else "conic-gradient(#{gradient.join ', '})"},
+	_ {s: "#{s} bgbe br50%"},
+		_ {s: "w100% pt100% br50% xrcc z2 sh0_1_3_0_bk-4 posr ho(scale1.05) _fade1 #{s2}", ref: selfRef,
+		style: {background: if isEmpty gradient then colors('beb-5') else "conic-gradient(#{gradient.join ', '})"},
 		onMouseMove: if onHover then mouseMove
 		onMouseOut: if onHover then mouseOut
 		onClick: onClickSelf},
 			Label && $ data, mapI (item, i) -> 
-				# _ {s: "posa lef#{position.x}% top#{position.y}% w20% h20% ml-10% mt-10% xccc"}
-					# _ Label, item
+				if isNaN item.position.x then return 
 				_ {s: "fawh5-11 posa lef#{item.position.x}% top#{item.position.y}% w20% h20% ml-10% mt-10% xccc", key: i},
 					_ Label, item
 			_ {s: 'posa top0 lef0 br50% h100% w100% xccc', ref: childRef},

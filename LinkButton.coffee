@@ -6,7 +6,7 @@ import NextLink from 'next/link'
 
 import {prepareNavigate} from 'comon/client/clientUtils'
 
-import Button from './Button2'
+import Button from './Button'
 
 
 # Separate LinkButton that wraps normal Button.
