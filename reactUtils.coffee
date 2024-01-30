@@ -174,7 +174,7 @@ export useWindowSize = () ->
 
 	handleResize = ->
 		width = window.innerWidth
-		height = window.innerWidth
+		height = window.innerHeight
 		setSize {width, height}
 
 	React.useEffect ->
@@ -184,6 +184,33 @@ export useWindowSize = () ->
 	, []
 
 	return size
+	
+# Calls callback if ref is scrolled into view or close enough based on thresholdDistance.
+# Note that if page is loaded with view scrolled below ref, it will call callback immediately.
+# https://chat.openai.com/share/4a0b1bb1-dc2e-43c0-acd5-6d92e5ea3dd2
+export useDistanceFromView = (ref, callback, thresholdDistance = 0) ->
+	[hasBeenCalled, setHasBeenCalled] = useState(false)
+
+	useEffect () ->
+		calculateDistanceAndCheckView = () ->
+			if hasBeenCalled then return
+
+			if ref.current
+				rect = ref.current.getBoundingClientRect()
+				isVisibleOrClose = (rect.bottom - window.innerHeight <= thresholdDistance) and (rect.top < window.innerHeight)
+				
+				if isVisibleOrClose
+					callback()
+					setHasBeenCalled(true)
+
+		window.addEventListener 'scroll', calculateDistanceAndCheckView
+		calculateDistanceAndCheckView()
+
+		return () -> window.removeEventListener('scroll', calculateDistanceAndCheckView)
+	, [ref, callback, hasBeenCalled, thresholdDistance]
+
+	return undefined
+
 
 # https://stackoverflow.com/a/53180013
 export useDidUpdateEffect = (fn, deps) ->

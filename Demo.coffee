@@ -35,6 +35,7 @@ const DynamicDropdownCurrency = dynamic(() => import('./DropdownCurrency'), {
 
 export default Demo = () ->
 	_ {},
+		_ Test123, {}
 		_ LineChartDemo, {}
 		_ CalendarDemo, {}
 		_ TextboxDemo, {}
@@ -45,6 +46,45 @@ export default Demo = () ->
 		_ TooltipDemo, {}
 		_ SpinnerDemo, {}
 		_ IconDemo, {}
+
+Test123 = ({}) ->
+	items = ["Affärsutveckling",
+						"AI",
+						"Automation",
+						"Avtal",
+						"Bygg",
+						"Design",
+						"E-handel",
+						"Ekonomi",
+						"Fastigheter",
+						"Finansiering",
+						"Hållbarhet",
+						"Häsla & sjukvård",
+						"Handel",
+						"Hantverk",
+						"Hår & skönhet",
+						"Marknadsföring",
+						"Restaurang ",
+						"Sälj",
+						"Industri",
+						"IT",
+						"Juridik",
+						"Turism",
+						"Transport",
+						"Patent",
+						"Produktutveckling",
+						"Socialt företagande",
+						"Upphandling",
+						"Varumärke"]
+
+	_ {s: 'p30 xr__w', style: {background: '#f6f3ed'}},
+		items.map (item, i) ->
+			selected = i == 12 || i == 19
+			extra = {}
+			if selected
+				extra.background = '#c9472d'
+				extra.color = '#ffffff'
+			_ {s: "bgwh p10_20 fabk-96-13 m5 br20", style: {border: '1px solid #f9dfc9', ...extra}}, item
 
 
 Box = ({title, s, children}) -> 

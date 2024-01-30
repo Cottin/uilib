@@ -24,7 +24,7 @@ import ClientOnlyWrapper from 'uilib/ClientOnlyWrapper'
 # - If you want to see more details from research check out commit from 2022-11-04 ModalOld.coffee
 
 # https://stackoverflow.com/a/59154364/416797
-export Portal = ({children, rootSelector}) ->
+export Portal = ({children, rootSelector = '#__next'}) ->
 	[container] = React.useState () ->
 		# // This will be executed only on the initial render
 		# // https://reactjs.org/docs/hooks-reference.html#lazy-initial-state
@@ -55,7 +55,7 @@ export Portal = ({children, rootSelector}) ->
 # Result: MyModal always rendered even when open=false so little worse perf but state and useCall will never
 #					reset between open/close of modal.
 
-export default Modal = ({s, open, children, rootSelector = '#__next'}) ->
+export default Modal = ({s, open, children, rootSelector}) ->
 	[ready, setReady] = useState false
 
 	useEffect () ->

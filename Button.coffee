@@ -1,7 +1,5 @@
 import React from 'react'
 
-import BounceLoader from 'react-spinners/BounceLoader'
-
 import {useFela, colors} from 'setup'
 
 import {Checkmark, Spinner} from './SVGs'
