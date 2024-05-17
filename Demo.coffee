@@ -14,6 +14,7 @@ import Button from './Button'
 import LinkButton from './LinkButton'
 import Spinner from './Spinner'
 import Tooltip from './Tooltip'
+import Tooltip2 from './Tooltip2'
 import Dropdown from './Dropdown'
 import Switch from './Switch'
 import Calendar from './Calendar'
@@ -36,14 +37,15 @@ DynamicDropdownCurrency = () -> 'Comment back in again if your project uses curr
 
 export default Demo = () ->
 	_ {},
+		_ Tooltip2Demo, {}
+		_ TooltipDemo, {}
 		_ ButtonDemo, {}
 		_ DropdownDemo, {}
-		_ LineChartDemo, {}
+		# _ LineChartDemo, {}
 		_ CalendarDemo, {}
 		_ TextboxDemo, {}
 		_ SwitchDemo, {}
 		_ LinkButtonDemo, {}
-		_ TooltipDemo, {}
 		_ SpinnerDemo, {}
 		_ IconDemo, {}
 
@@ -360,6 +362,34 @@ SpinnerDemo = () ->
 
 		_ Item, {desc: 'Skeleton'},
 				_ {s: 'h30 w100% _skelbk-2'}
+
+Tooltip2Demo = () ->
+
+	_ Box, {title: 'Tooltip 2 (new version)'},
+
+		_ Box1, {title: 'Directions'},
+			_ Item, {},
+				_ {s: 'xr__'},
+					_ {s: 'mr40'},
+						_ Tooltip2, {text: _ {s: 'whn p10_20'}, 'This is a tooltip'},
+							_ {s: 'bg1 p20 hoc1(op1) posr'},
+								_ {}, 'direction = up (default)',
+
+					_ {s: 'mr40'},
+						_ Tooltip2, {direction: 'right', text: _ {s: 'whn p10_20'}, 'This is a tooltip'},
+							_ {s: 'bg1 p20 hoc1(op1) posr'},
+								_ {}, 'direction = right',
+
+					_ {s: 'mr40'},
+						_ Tooltip2, {direction: 'down', text: _ {s: 'whn p10_20'}, 'This is a tooltip'},
+							_ {s: 'bg1 p20 hoc1(op1) posr'},
+								_ {}, 'direction = down',
+
+					_ {s: 'mr40'},
+						_ Tooltip2, {direction: 'left', text: _ {s: 'whn p10_20'}, 'This is a tooltip'},
+							_ {s: 'bg1 p20 hoc1(op1) posr'},
+								_ {}, 'direction = left',
+								
 
 TooltipDemo = () ->
 
