@@ -6,8 +6,6 @@ import React, {useRef, useState, useEffect, useCallback} from 'react'
 import {useFela, colors} from 'setup'
 
 import {useChangeState, memoDeep} from './reactUtils'
-import debounce from 'lodash.debounce'
-import throttle from 'lodash.throttle'
 
 
 # Converts an angle expressed in percent to radians

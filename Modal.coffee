@@ -23,19 +23,35 @@ import ClientOnlyWrapper from 'uilib/ClientOnlyWrapper'
 #	
 # - If you want to see more details from research check out commit from 2022-11-04 ModalOld.coffee
 
-# https://stackoverflow.com/a/59154364/416797
+# # https://stackoverflow.com/a/59154364/416797
+# export Portal = ({children, rootSelector = '#__next'}) ->
+# 	[container] = React.useState () ->
+# 		# // This will be executed only on the initial render
+# 		# // https://reactjs.org/docs/hooks-reference.html#lazy-initial-state
+# 		return document.createElement 'div'
+
+# 	React.useEffect () ->
+# 		document.body.appendChild(container)
+# 		return () -> document.body.removeChild(container)
+# 	, []
+
+# 	return createPortal children, container
+
 export Portal = ({children, rootSelector = '#__next'}) ->
-	[container] = React.useState () ->
-		# // This will be executed only on the initial render
-		# // https://reactjs.org/docs/hooks-reference.html#lazy-initial-state
-		return document.createElement 'div'
+  [container, setContainer] = React.useState(null)
 
-	React.useEffect () ->
-		document.body.appendChild(container)
-		return () -> document.body.removeChild(container)
-	, []
+  React.useEffect(() ->
+    newContainer = document.createElement('div')
+    document.body.appendChild(newContainer)
+    setContainer(newContainer)
 
-	return createPortal children, container
+    return () -> document.body.removeChild(newContainer)
+  , [])
+
+  if container?
+    return createPortal children, container
+  else
+    return null
 
 
 # Usage 1:
@@ -55,7 +71,7 @@ export Portal = ({children, rootSelector = '#__next'}) ->
 # Result: MyModal always rendered even when open=false so little worse perf but state and useCall will never
 #					reset between open/close of modal.
 
-export default Modal = ({s, open, children, rootSelector}) ->
+export default Modal = ({s, open, children, rootSelector = '#__next'}) ->
 	[ready, setReady] = useState false
 
 	useEffect () ->
@@ -65,19 +81,19 @@ export default Modal = ({s, open, children, rootSelector}) ->
 
 
 	onEntering = () ->
-		document.querySelector(rootSelector).style.filter = 'blur(4px)'
+		document.querySelector(rootSelector)?.style.filter = 'blur(4px)'
 
 	onExiting = () ->
-		document.querySelector(rootSelector).style.filter = 'none'
+		document.querySelector(rootSelector)?.style.filter = 'none'
 
 	_ ClientOnlyWrapper, {},
 		_ CSSTransition, {in: open && ready, unmountOnExit: true, timeout: 300, classNames: "aniModal", onExiting, onEntering},
 			_ Portal, {rootSelector},
-				_ {s: "#{s} posa w100% p0_20 z11 top15vh <500[top5vh] xrc_ xg1"},
+				_ {s: "#{s} posa w100% p0_20 z111 top15vh <500[top5vh] xrc_ xg1"},
 					children
-				_ {s: 'posf w100% h100% z10 bgbk-2 xrcc top0 lef0', className: 'backdrop'}
+				_ {s: 'posf w100% h100% z110 bgbk-2 xrcc top0 lef0', className: 'backdrop'}
 
-				_ 'svg', {height: 0, width: 0},
-					_ 'filter', {id: "blurFilter"},
-						_ 'feGaussianBlur', {stdDeviation: 4}
+				# _ 'svg', {height: 0, width: 0},
+				# 	_ 'filter', {id: "blurFilter"},
+				# 		_ 'feGaussianBlur', {stdDeviation: 4}
 

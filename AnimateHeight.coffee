@@ -21,24 +21,31 @@ export default AnimateHeight = ({children, className, s}) ->
   ref = useRef null
 
   useLayoutEffect () ->
-    el = ref.current
+    # Wrapping in raf because el.getBoundingClientRect() seems to be 0 in some cases otherwise
+    rafId2 = undefined
+    rafId = requestAnimationFrame () ->
+      el = ref.current
 
-    # get height of wrapper before everything happens
-    oldHeight = el.getBoundingClientRect().height
+      # get height of wrapper before everything happens
+      oldHeight = el.getBoundingClientRect().height
+      # if oldHeight == 0 then return
 
-    # change height to auto to make browser calculate
-    # get new calculated height
-    # change it back to old before the browser realises what you did (i.e. before it re-paints)
-    el.style.height = 'auto'
-    newHeight = el.getBoundingClientRect().height
-    el.style.height = "#{oldHeight}px"
+      # change height to auto to make browser calculate
+      # get new calculated height
+      # change it back to old before the browser realises what you did (i.e. before it re-paints)
+      el.style.height = 'auto'
+      newHeight = el.getBoundingClientRect().height
+      el.style.height = "#{oldHeight}px"
 
-    # wait for next paint
-    # change height to the new value
-    requestAnimationFrame () ->
-      el.style.height = "#{newHeight}px"
+      # wait for next paint
+      # change height to the new value
+      rafId2 = requestAnimationFrame () ->
+        el.style.height = "#{newHeight}px"
 
-    return undefined
+    return () ->
+      cancelAnimationFrame rafId
+      if rafId2 then cancelAnimationFrame rafId2
+
   , [children, ref]
 
   # Used {overflow: "hidden"} before but seemed to work just fine without it so it was removed

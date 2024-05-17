@@ -4,16 +4,16 @@ import {useFela, colors} from 'setup'
 
 import {Checkmark, Spinner} from './SVGs'
 
-export default Button = ({s, sChildren: sChildrenProp, sBg: sBgProp, kind, look = 'default', color,
-	scale = 1.0, wait, success, onClick, disabled, children, className, href, ...rest}) ->
+export default Button = React.forwardRef ({s, sChildren: sChildrenProp, sBg: sBgProp, kind, look = 'default', color,
+	scale = 1.0, wait, success, onClick, disabled, children, className, href, ...rest}, ref) ->
 
 	style = {}
 
 	if href then throw new Error 'href no longer supported in Button, use LinkButton'
 
 	sButton = "posr p0 xrcc curp bg0"
-	sBg = "br3 iw100% h100% posa z1"
-	sChildren = "z2 posr"
+	sBg = "br3 iw100% h100% posa xrcc"
+	sChildren = "posr"
 	spinnerClr = 'wh'
 	sSpinner = ''
 	sSuccess = 'h100%'
@@ -48,10 +48,15 @@ export default Button = ({s, sChildren: sChildrenProp, sBg: sBgProp, kind, look 
 			spinnerClr = 'bue'
 
 	else if kind == 'hover'
-		sButton += " br3 fabk-47-#{fSize} #{!disabled && 'hofo(fabk-57-'+fSize+' out0) hofoc4(bggn)'} _fade1"
+		sButton += " br3 fabk-47-#{fSize} _fade1"
 		sChildren += " br22 p#{pvSize}_#{phSize1}"
-		if wait || success
-			sBg += " bggn"
+
+		if look == 'default'
+			sButton += " #{!disabled && 'hofo(fabk-57-'+fSize+' out0) hofoc4(bggn)'}"
+			if wait || success then sBg += " bggn"
+		else if look == 'beige'
+			sButton += " #{!disabled && 'hofo(bgbeb fabk-5 out0)'} _fade1"
+
 
 	else if kind == 'pill'
 		sButton += " br22 #{!disabled && 'hofo(scale1.02 out0)'} _fade1"
@@ -97,6 +102,19 @@ export default Button = ({s, sChildren: sChildrenProp, sBg: sBgProp, kind, look 
 			if disabled then sButton += ' op0.3'
 			else if !wait && !success then sButton += " hofo(op1)"
 			spinnerClr = 'bk-9'
+
+	else if kind == 'popup'
+		sButton += " xg1 xb1 _fade1 xrcc fabk-37-15 borlbk-0 borrbk-0 borbbk-0 bortgyb-8 nf(borlgyb-8) l(br0_0_10_0) f(br0_0_0_10)"
+		sChildren += " br4 p#{pvSize*2.4}_#{phSize}"
+
+		if look == 'blue'
+			sButton += " bgwh xg1 #{disabled && 'fabk-1' || 'hofo(fabk-6 bgbun>1-3 bordbk-2) out0' }"
+			spinnerClr = 'buk-6'
+			sSpinner += " h80%"
+		else if look == 'text'
+			sButton += " #{disabled && 'fabk-1' || 'ho(fabk-6 bordbk-2)'}"
+			spinnerClr = 'bk-3'
+			sSpinner += " h80%"
 
 	else if kind == 'small'
 		sButton += " op0.3"
@@ -147,8 +165,8 @@ export default Button = ({s, sChildren: sChildrenProp, sBg: sBgProp, kind, look 
 	if wait || success
 		sBg += " br50% iw20"
 
-	_ 'button', {s: "#{sButton} #{s}", className, ...extra, ...rest},
-		_ {s: "#{sBg} #{sBgProp}", className: "c4 spinnerBg #{success && 'spinnerScale'}"},
+	_ 'button', {s: "#{sButton} #{s}", className, ref, ...extra, ...rest},
+		_ {s: "#{sBg} #{sBgProp}", className: "c4 xrcc spinnerBg #{success && 'spinnerScale'}"},
 			if wait then _ Spinner, {s: "p2 #{sSpinner}", clr: spinnerClr}
 			else if success then _ Checkmark, {s: "#{sSuccess}", clr: spinnerClr}
 

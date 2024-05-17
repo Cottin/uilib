@@ -7,7 +7,7 @@ import dynamic from 'next/dynamic'
  
 import SVGgoogle from 'icons/google.svg'
 import SVGpen from 'icons/pen.svg'
-import {useCall2} from 'uilib/reactUtils'
+import {useCall} from 'uilib/reactUtils'
 import {sleep} from 'comon/shared'
 
 import Button from './Button'
@@ -26,66 +26,26 @@ import {useFela, colors} from 'setup'
 LoadingSkel = () ->
 	_ {s: 'w100% _skelbk-2 fabk-47-14 fsi p10_15 outgyc-2 bgwh br4'}, 'Loading currencies'
 
-```
-const DynamicDropdownCurrency = dynamic(() => import('./DropdownCurrency'), {
-	ssr: false,
-	loading: () => <LoadingSkel />,
-})
-```
+# ```
+# const DynamicDropdownCurrency = dynamic(() => import('./DropdownCurrency'), {
+# 	ssr: false,
+# 	loading: () => <LoadingSkel />,
+# })
+# ```
+DynamicDropdownCurrency = () -> 'Comment back in again if your project uses currency'
 
 export default Demo = () ->
 	_ {},
-		_ Test123, {}
+		_ ButtonDemo, {}
+		_ DropdownDemo, {}
 		_ LineChartDemo, {}
 		_ CalendarDemo, {}
 		_ TextboxDemo, {}
-		_ DropdownDemo, {}
 		_ SwitchDemo, {}
 		_ LinkButtonDemo, {}
-		_ ButtonDemo, {}
 		_ TooltipDemo, {}
 		_ SpinnerDemo, {}
 		_ IconDemo, {}
-
-Test123 = ({}) ->
-	items = ["Affärsutveckling",
-						"AI",
-						"Automation",
-						"Avtal",
-						"Bygg",
-						"Design",
-						"E-handel",
-						"Ekonomi",
-						"Fastigheter",
-						"Finansiering",
-						"Hållbarhet",
-						"Häsla & sjukvård",
-						"Handel",
-						"Hantverk",
-						"Hår & skönhet",
-						"Marknadsföring",
-						"Restaurang ",
-						"Sälj",
-						"Industri",
-						"IT",
-						"Juridik",
-						"Turism",
-						"Transport",
-						"Patent",
-						"Produktutveckling",
-						"Socialt företagande",
-						"Upphandling",
-						"Varumärke"]
-
-	_ {s: 'p30 xr__w', style: {background: '#f6f3ed'}},
-		items.map (item, i) ->
-			selected = i == 12 || i == 19
-			extra = {}
-			if selected
-				extra.background = '#c9472d'
-				extra.color = '#ffffff'
-			_ {s: "bgwh p10_20 fabk-96-13 m5 br20", style: {border: '1px solid #f9dfc9', ...extra}}, item
-
 
 Box = ({title, s, children}) -> 
 	_ {s: "bgwh bordbk-1 p30_10_10_10 m20 posr #{s}"},
@@ -105,7 +65,7 @@ Item = ({s, desc, children}) ->
 
 
 ButtonDemo = () ->
-	fake = useCall2 ->
+	fake = useCall ->
 		await sleep 2000
 
 	onClick = fake.call
@@ -113,6 +73,24 @@ ButtonDemo = () ->
 	success = fake.success
 
 	_ Box, {title: 'Button'},
+
+		_ Box1, {title: 'Kind = popup'},
+
+			_ Item, {desc: 'look: default'},
+				_ {s: 'xr__'},
+					_ {s: 'mr10 w400 bg1 p20'},
+						_ {s: 'bgbe _sh2 br10'},
+							_ {s: 'xrcc p30'}, 'Popup'
+							_ {s: 'xrac'},
+								_ Button, {s: '', kind: 'popup', look: 'text', onClick, wait, success}, 'Cancel'
+								_ Button, {s: '', kind: 'popup', look: 'blue', onClick, wait, success}, 'Save'
+
+					_ {s: 'mr10 w400 bg1 p20'},
+						_ {s: 'bgbe _sh2 br10'},
+							_ {s: 'xrcc p30'}, 'disabled'
+							_ {s: 'xrac'},
+								_ Button, {s: '', kind: 'popup', look: 'text', disabled: true, onClick, wait, success}, 'Cancel'
+								_ Button, {s: '', kind: 'popup', look: 'blue', disabled: true, onClick, wait, success}, 'Save'
 
 		_ Box1, {title: 'Kind = rounded'},
 
@@ -137,7 +115,7 @@ ButtonDemo = () ->
 					# _ {s: 'mr10 h80'},
 						# _ Button, {s: 'mb10', type: 'submit', wait}, 'Sign in'
 
-			_ Item, {desc: 'look: default, color: sea, coral'},
+			_ Item, {desc: 'look: default, color: sea, coral, azure'},
 				_ {s: 'xr__'},
 					_ {s: 'mr10'},
 						_ Button, {s: 'mb20', kind: 'rounded', color: 'sea', onClick, wait, success}, 'Save'
@@ -147,6 +125,10 @@ ButtonDemo = () ->
 						_ Button, {s: 'mb20', kind: 'rounded', color: 'coral', onClick, wait, success}, 'Save'
 					_ {s: 'mr10'},
 						_ Button, {s: 'mb20', kind: 'rounded', color: 'coral', onClick, wait, success, disabled: true}, 'Save'
+					_ {s: 'mr10'},
+						_ Button, {s: 'mb20', kind: 'rounded', color: 'azure', onClick, wait, success}, 'Save'
+					_ {s: 'mr10'},
+						_ Button, {s: 'mb20', kind: 'rounded', color: 'azure', onClick, wait, success, disabled: true}, 'Save'
 
 			_ Item, {desc: 'look: text'},
 				_ {s: 'xr__'},
@@ -226,7 +208,7 @@ ButtonDemo = () ->
 
 
 LinkButtonDemo = () ->
-	fake = useCall2 ->
+	fake = useCall ->
 		await sleep 2000
 
 	onClick = fake.call
@@ -292,6 +274,9 @@ DropdownDemo = () ->
 				_ Dropdown, {s: 'xw200', placeholder: 'Select country', items: countries, onChange, selected}
 			_ Item, {desc: ''},
 				_ Dropdown, {s: 'xw200', placeholder: 'Select country', error: true, items: countries, onChange, selected}
+		_ Box1, {title: 'Disabled'},
+			_ Item, {desc: ''},
+				_ Dropdown, {s: 'xw200', placeholder: 'Select country', items: countries, onChange, selected, disabled: true}
 		_ Box1, {title: 'custom items'},
 			_ Item, {desc: ''},
 				_ Dropdown, {s: 'xw200', placeholder: 'Select country', items: countries, onChange, selected,
@@ -315,11 +300,14 @@ DropdownDemo = () ->
 		# 		autoComplete: true}
 		_ AutoCompleteSub, {}
 
+		_ AutoCompleteGroupedSub, {}
+
 		_ DropdownCurrencySub, {}
 
 
 AutoCompleteSub = () ->
-	words = ['windy', 'wince', 'winch', 'winze', 'winey', 'wined', 'wines', 'wingy', 'wings', 'winos', 'winks', 'winds']
+	words = ['win', 'wind', 'winded', 'winder', 'window', 'winds', 'windy', 'wine', 'winery', 'wing', 'wings', 'wink', 'winner', 'winning', 'winter', 'wintery', 'wide', 'widen', 'wider', 'widow', 'width', 'wild', 'wilder', 'will', 'willow', 'willing', 'wilt', 'wily', 'wish', 'wished', 'wisp', 'wispy', 'wise', 'wiser', 'wisdom', 'wit', 'witch', 'with', 'witless', 'witty']
+	# words = ['win', 'wind', 'winded', 'winder', 'window', 'winds', 'windy', 'wine']
 	[selected, setSelected] = useState null
 
 	onChange = (item) ->
@@ -330,6 +318,20 @@ AutoCompleteSub = () ->
 		_ Item, {desc: ''},
 			_ Dropdown, {s: 'xw200', placeholder: 'Select country', items: words, onChange, selected,
 			autoComplete: true}
+			_ Dropdown, {s: 'xw200 mt50', placeholder: 'Select country', items: words, onChange, selected,
+			autoComplete: true, disabled: true}
+
+AutoCompleteGroupedSub = () ->
+	items = ['win', 'wind', 'winded', 'winder', 'window', 'winds', 'windy', 'wine', 'winery', 'wing', 'wings', 'wink', 'winner', 'winning', 'winter', 'wintery', 'wide', 'widen', 'wider', 'widow', 'width', 'wild', 'wilder', 'will', 'willow', 'willing', 'wilt', 'wily', 'wish', 'wished', 'wisp', 'wispy', 'wise', 'wiser', 'wisdom', 'wit', 'witch', 'with', 'witless', 'witty']
+	groupBy = (item) -> item.substring(0, 3).toUpperCase()
+	[selected, setSelected] = useState null
+	onChange = (item) -> 
+		console.log 'onChange', item
+		setSelected item
+
+	_ Box1, {title: 'Auto complete'},
+		_ Item, {desc: ''},
+			_ Dropdown, {s: 'xw200', placeholder: 'Select country', items, groupBy, onChange, selected, autoComplete: true}
 
 DropdownCurrencySub = () ->
 	[selected, setSelected] = useState null
@@ -469,8 +471,8 @@ CalendarDemo = () ->
 labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep']
 
 data = [
-	$ [152, 169, 134, 104, 140, 159, 182, 192, 191], mapI (value, i) -> {label: labels[i], value}
-	$ [102, 154, 114, 144, 160, 130, 120, 102, 91], mapI (value, i) -> {label: labels[i], value}
+	$ [152, 169, null, 104, 140, 159, 182, 192, 191], mapI (value, i) -> {label: labels[i], value}
+	$ [null, 154, 114, 144, null, null, 120, 102, null], mapI (value, i) -> {label: labels[i], value}
 	$ [80, 132, 124, 134, 110, 120], mapI (value, i) -> {label: labels[i], value}
 	$ [83, 112, 164, 174, 140, 110], mapI (value, i) -> {label: labels[i], value}
 ]
@@ -483,23 +485,48 @@ chartLook =
 		hover:
 			r: 9
 
+chartLookMulti =
+	circle:
+		default:
+			[{}, {fill: colors('rea')}]
+		hover:
+			r: 9
+	circleSelected:
+		default:
+			[{}, {fill: colors('re')}]
+
 LineChartDemo = () ->
 	[dataIdx, setDataIdx] = useState 0
 	[selectedIdx, setSelectedIdx] = useState 2
 
+	[dataIdxMulti, setDataIdxMulti] = useState 0
+	[selectedIdxMulti, setSelectedIdxMulti] = useState 2
+
 	onSwitch = () ->
 		setDataIdx if dataIdx == data.length - 1 then 0 else dataIdx + 1
 
-	onClick = (point) ->
-		setSelectedIdx point.idx
+	onSwitchMulti = () ->
+		setDataIdxMulti if dataIdxMulti == data.length - 2 then 0 else dataIdxMulti + 1
+
+	onClick = (point) -> setSelectedIdx point.idx
+	onClickMulti = (point) -> setSelectedIdxMulti point.idx
 
 	dataToUse = $ data[dataIdx], mapI (o, i) -> {...o, ...(i == selectedIdx && {selected: true} || {})}
+
+	enrichWithSelected = (points) -> $ points, mapI (o, i) -> {...o, ...(i == selectedIdxMulti && {selected: true} || {})}
+
+	dataMulti = [enrichWithSelected(data[dataIdxMulti]), enrichWithSelected(data[dataIdxMulti + 1])]
 
 	_ Box, {title: 'LineChart', s: 'bgbe'},
 		_ Box1, {title: 'Basic'},
 			_ Item, {desc: '', s: 'xg1 h300'},
-				_ LineChart, {data: dataToUse, s: '_sh6', look: chartLook, onClick}
+				_ LineChart, {data: [dataToUse], s: '_sh6', look: chartLook, onClick}
 				_ Button, {s: 'w80 mt20', kind: 'rounded', onClick: onSwitch}, 'Switch'
+
+		_ Box1, {title: 'Multi-line'},
+			_ Item, {desc: '', s: 'xg1 h300'},
+				_ LineChart, {data: dataMulti, s: '_sh6', look: chartLookMulti, onClick: onClickMulti}
+				_ Button, {s: 'w80 mt20', kind: 'rounded', onClick: onSwitchMulti}, 'Switch'
 
 
 IconDemo = () ->

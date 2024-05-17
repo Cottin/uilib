@@ -1,7 +1,7 @@
 import always from "ramda/es/always"; import equals from "ramda/es/equals"; import flip from "ramda/es/flip"; import init from "ramda/es/init"; import isNil from "ramda/es/isNil"; import map from "ramda/es/map"; import type from "ramda/es/type"; import without from "ramda/es/without"; #auto_require: esramda
 import {change, diff, isNilOrEmpty, sf2} from "ramda-extras" #auto_require: esramda-extras
 
-import React, {useState, useEffect, useRef} from 'react'
+import React, {useState, useEffect, useRef, useCallback} from 'react'
 
 import {_} from 'setup'
 
@@ -18,7 +18,10 @@ memoDeep.debug = (f) -> React.memo f, comparatorWithLog
 
 export isMountedGuard = (isMountedRef) ->
 	# https://daviseford.com/blog/2019/07/11/react-hooks-check-if-mounted.html
-	React.useEffect (() -> () -> return isMountedRef.current = false), []
+	React.useEffect () ->
+		isMountedRef.current = true
+		return () -> isMountedRef.current = false
+	, []
 
 export useChangeState = (initial) ->
 	[state, setState] = React.useState initial
@@ -151,6 +154,13 @@ export useMouseMonitor = ({mouseMove, mouseUp}, deps, init, skip=false) ->
 			if mouseUp then window.removeEventListener 'mouseup', mouseUp
 	, deps
 
+export useKeyDownListener = (onKeyDown) ->
+	useEffect () ->
+		handleKeydown = (e) -> onKeyDown e
+		document.addEventListener 'keydown', handleKeydown
+		return () -> document.removeEventListener 'keydown', handleKeydown
+	, [onKeyDown]
+
 # Returns size of supplied ref like {width: 344, height: 102} and updates on window resize
 export useMySize = (ref) ->
 	[size, setSize] = React.useState {width: 0, height: 0}
@@ -170,7 +180,7 @@ export useMySize = (ref) ->
 
 # Returns size of window like {width: 344, height: 102} and updates on window resize
 export useWindowSize = () ->
-	[size, setSize] = React.useState {width: 0, height: 0}
+	[size, setSize] = React.useState {width: window?.innerWidth || 0, height: window?.innerHeight || 0}
 
 	handleResize = ->
 		width = window.innerWidth
@@ -188,7 +198,7 @@ export useWindowSize = () ->
 # Calls callback if ref is scrolled into view or close enough based on thresholdDistance.
 # Note that if page is loaded with view scrolled below ref, it will call callback immediately.
 # https://chat.openai.com/share/4a0b1bb1-dc2e-43c0-acd5-6d92e5ea3dd2
-export useDistanceFromView = (ref, callback, thresholdDistance = 0) ->
+export useDistanceFromView = (ref, callback, thresholdDistance = 0, sendPixels = false) ->
 	[hasBeenCalled, setHasBeenCalled] = useState(false)
 
 	useEffect () ->
@@ -197,11 +207,13 @@ export useDistanceFromView = (ref, callback, thresholdDistance = 0) ->
 
 			if ref.current
 				rect = ref.current.getBoundingClientRect()
-				isVisibleOrClose = (rect.bottom - window.innerHeight <= thresholdDistance) and (rect.top < window.innerHeight)
+				isVisibleOrClose = (rect.bottom - window.innerHeight <= thresholdDistance) && (rect.top < window.innerHeight)
 				
 				if isVisibleOrClose
-					callback()
+					callback rect.bottom - window.innerHeight 
 					setHasBeenCalled(true)
+				else if sendPixels && rect.top < window.innerHeight
+					callback rect.bottom - window.innerHeight 
 
 		window.addEventListener 'scroll', calculateDistanceAndCheckView
 		calculateDistanceAndCheckView()
@@ -223,56 +235,9 @@ export useDidUpdateEffect = (fn, deps) ->
 
 
 _useCall = ({successDelay = 1500, onError = null, asyncCall}) ->
-	isMounted = React.useRef true
-	isMountedGuard isMounted
-
 	[st, cs] = useChangeState {}
-
-	callFn = (args...) ->
-		cs {wait: true, error: undefined, result: undefined}
-		try
-			result = await Promise.resolve asyncCall args...
-			if result == 'ABORT'
-				cs {wait: false}
-				return result
-			if !isMounted.current then return result
-
-			cs {wait: false, success: true, result}
-			if successDelay > 0 then setTimeout (->
-				if !isMounted.current then return result
-				cs {success: undefined}), successDelay
-
-			return result
-		catch error
-			onError?(error)
-			cs always {error, wait: false}
-			console.error error
-
-	return 
-		wait: st.wait
-		result: st.result
-		error: st.error
-		success: st.success
-		reset: (key = undefined) ->
-			# seems to either reset given key or full state but not really, TODO: test and redocument
-			if key && type(key) == 'string' && !st.error?.meta?[key] then return
-			cs always {}
-		call: callFn
-
-# Lets you call an async function with the abibility to throw and handle results as state
-# eg. useCall -> ... or useCall {successDelay: 2000}, -> ...
-export useCall = (optionsOrCall, callOrUndefined) ->
-	asyncCall = if callOrUndefined then callOrUndefined else optionsOrCall
-	options = if callOrUndefined then optionsOrCall else {}
-
-	_useCall {...options, asyncCall}
-
-
-_useCall2 = ({successDelay = 1500, onError = null, asyncCall}) ->
-	isMounted = React.useRef true
+	isMounted = useRef false
 	isMountedGuard isMounted
-
-	[st, cs] = useChangeState {}
 
 	callFn = (args...) ->
 		cs {wait: true, error: undefined, result: undefined, success: undefined}
@@ -281,12 +246,12 @@ _useCall2 = ({successDelay = 1500, onError = null, asyncCall}) ->
 			if result == 'ABORT'
 				cs {wait: false}
 				return result
-			# if !isMounted.current then return result # uncommenting because file upload/download dosent work otherwise
-
 			cs {wait: false, success: true, result}
-			if successDelay > 0 then setTimeout (->
-				if !isMounted.current then return result
-				cs {success: undefined}), successDelay
+			if successDelay > 0
+				setTimeout ->
+					if isMounted.current != true then return
+					cs {success: undefined}
+				, successDelay
 
 			return result
 		catch error
@@ -315,13 +280,13 @@ _useCall2 = ({successDelay = 1500, onError = null, asyncCall}) ->
 
 # Lets you call an async function with the abibility to throw and handle results as state
 # eg. useCall -> ... or useCall {successDelay: 2000}, -> ...
-export useCall2 = (optionsOrCall, callOrUndefined) ->
+export useCall = (optionsOrCall, callOrUndefined) ->
 	asyncCall = if callOrUndefined then callOrUndefined else optionsOrCall
 	options = if callOrUndefined then optionsOrCall else {}
 
-	_useCall2 {...options, asyncCall}
+	_useCall {...options, asyncCall}
 
-
+export useCall2 = useCall
 
 # Let's you define a local view model operating on local state with local operations.
 # eg. Have a local normalized state:

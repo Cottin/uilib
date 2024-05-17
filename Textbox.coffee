@@ -12,8 +12,8 @@ toMask = (mask) ->
 	if mask == 'number' then return /^[\d\.,]+$/
 	else return mask
 
-export default Textbox = ({s, kind = 'box', type = 'text', mask, onChange, onEnter, onKeyDown, error, value,
-	...rest}) ->
+export default Textbox = React.forwardRef ({s, kind = 'box', type = 'text', mask, onChange, onEnter, onKeyDown,
+	error, value, ...rest}, ref) ->
 	sBase = 'outgyc-2 fo(outgyc-8_2) bord0 bgwh xg1 fabka7-14 p10_15 _fade3 _textboxPlaceholder'
 	sError = if error then 'outrec_3 fo(outrec_3)' else ''
 
@@ -32,7 +32,7 @@ export default Textbox = ({s, kind = 'box', type = 'text', mask, onChange, onEnt
 
 		onChange?(e.target.value, e)
 
-	_ 'input', {s: "#{sBase} #{sKind} #{sError} #{s}", type, spellCheck: 'false', onChange: onChangeSelf,
+	_ 'input', {s: "#{sBase} #{sKind} #{sError} #{s}", ref, type, spellCheck: 'false', onChange: onChangeSelf,
 	value: value || '',
 	onKeyDown: (e) ->
 		if e.keyCode == 13 then onEnter?()
