@@ -13,7 +13,7 @@ import {Portal} from './Modal'
 # Since you wrap things with this, if disable=true only children is reutrned with minimal overhead
 export default Tooltip2 = ({s, sInner, sTriangle, children, text, direction = 'up', margin = 7, disable}) ->
 	ref = useRef()
-	[style, setStyle] = useState ''
+	[style, setStyle] = useState 'op0 top0 lef0 pen'
 	[tri, setTri] = useState ''
 
 	if disable then return children
