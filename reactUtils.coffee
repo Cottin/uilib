@@ -127,7 +127,7 @@ export useForceScrollbar = () ->
 
 export useOuterClick = (ref, onOuterClick) ->
 	React.useEffect ->
-		handleClick = (e) -> if ref.current && !ref.current.contains(e.target) then onOuterClick()
+		handleClick = (e) -> if ref.current && !ref.current.contains(e.target) then onOuterClick(e)
 		# {capture: true} important if we are also removing the element that's being clicked eg. a toggle.
 		# https://github.com/facebook/react/issues/20325#issuecomment-732707240
 		if ref.current then document.addEventListener 'click', handleClick, {capture: true}
