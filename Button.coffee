@@ -91,17 +91,38 @@ export default Button = React.forwardRef ({s, sChildren: sChildrenProp, sBg: sBg
 		else if color == 'coral' then clr = 'rec'
 
 		if look == 'default'
+			sButton += " br4 out0"
 			sBg += " bg#{clr} br4"
 			sChildren += " fawh7-#{fSize}"
 			if disabled then sButton += ' op0.3'
-			else if !wait && !success then sButton += " hoc4(bg#{clr}<3)"
+			else if !wait && !success then sButton += " hofoc4(bg#{clr}<3)"
 
 		else if look == 'text'
+			sButton += " op0.5 out0"
 			sChildren += " fabk-67-#{fSize}"
-			sButton += " op0.5"
 			if disabled then sButton += ' op0.3'
-			else if !wait && !success then sButton += " hofo(op1)"
+			else if !wait && !success then sButton += " hofo(op1) hofoc4(bgbk-1)"
 			spinnerClr = 'bk-9'
+
+	else if kind == 'circle'
+		sButton += " br50% out0"
+		sChildren += " xrcc"
+		sBg += " br50%"
+
+		if look == 'default'
+			clr = 'gyb'
+			fillClr = 'bk-8'
+			spinnerClr = 'bk-6'
+		else if look == 'beige'
+			clr = 'beb'
+			fillClr = 'bk-5'
+			spinnerClr = 'bk-5'
+
+		if wait || success then sBg += " bg#{clr}"
+		if disabled then sButton += ' op0.3'
+
+		if !wait && !success then sButton += " hofoc4(bg#{clr}) hoc5(fill#{fillClr})"
+
 
 	else if kind == 'popup'
 		sButton += " xg1 xb1 _fade1 xrcc fabk-37-15 borlbk-0 borrbk-0 borbbk-0 bortgyb-8 nf(borlgyb-8) l(br0_0_10_0) f(br0_0_0_10)"
