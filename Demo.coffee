@@ -7,6 +7,7 @@ import dynamic from 'next/dynamic'
  
 import SVGgoogle from 'icons/google.svg'
 import SVGpen from 'icons/pen.svg'
+import SVGduplicate from 'icons/duplicate.svg'
 import {useCall} from 'uilib/reactUtils'
 import {sleep} from 'comon/shared'
 
@@ -37,12 +38,12 @@ DynamicDropdownCurrency = () -> 'Comment back in again if your project uses curr
 
 export default Demo = () ->
 	_ {},
+		_ CalendarDemo, {}
+		_ ButtonDemo, {}
 		_ Tooltip2Demo, {}
 		_ TooltipDemo, {}
-		_ ButtonDemo, {}
 		_ DropdownDemo, {}
 		# _ LineChartDemo, {}
-		_ CalendarDemo, {}
 		_ TextboxDemo, {}
 		_ SwitchDemo, {}
 		_ LinkButtonDemo, {}
@@ -117,6 +118,7 @@ ButtonDemo = () ->
 					# _ {s: 'mr10 h80'},
 						# _ Button, {s: 'mb10', type: 'submit', wait}, 'Sign in'
 
+
 			_ Item, {desc: 'look: default, color: sea, coral, azure'},
 				_ {s: 'xr__'},
 					_ {s: 'mr10'},
@@ -139,6 +141,19 @@ ButtonDemo = () ->
 					_ {s: 'mr10'},
 						_ Button, {s: 'mb20', kind: 'rounded', look: 'text', onClick, wait, success, disabled: true}, 'Cancel'
 
+		_ Box1, {title: 'Kind = circle (must give w and h)'},
+			_ Item, {desc: 'look: default'},
+				_ {s: 'xr__'},
+					_ {s: 'mr10 h80'},
+						_ Button, {s: 'w40 h40', kind: 'circle', onClick, wait, success},
+							_ SVGduplicate, {s: 'fillbk-3 w20 _fade1', className: 'c5'}
+
+			_ Item, {desc: 'look: beige'},
+				_ {s: 'xr__'},
+					_ {s: 'mr10 h80'},
+						_ Button, {s: 'w40 h40', kind: 'circle', look: 'beige', onClick, wait, success},
+							_ SVGduplicate, {s: 'fillbk-3 w20 _fade1', className: 'c5'}
+
 		_ Box1, {title: 'Kind = hover'},
 
 			_ Item, {desc: 'look: default'},
@@ -153,6 +168,7 @@ ButtonDemo = () ->
 						_ Button, {s: 'mb20 hofoc1(fillwh)', sChildren: 'xr_c', kind: 'hover', scale: 0.9, onClick, wait, success},
 							_ SVGpen, {s: 'fillbk-3 w20 mr8 _fade1', className: 'c1'}
 							_ {}, 'Edit'
+
 
 		_ Box1, {title: 'Kind = login'},
 
@@ -365,7 +381,7 @@ SpinnerDemo = () ->
 
 Tooltip2Demo = () ->
 
-	_ Box, {title: 'Tooltip 2 (new version)'},
+	_ Box, {title: 'Tooltip 2 (portal version = use if needed for zIndex purposes)'},
 
 		_ Box1, {title: 'Directions'},
 			_ Item, {},
@@ -469,10 +485,13 @@ TooltipDemo = () ->
 CalendarDemo = () ->
 	[date, setDate] = useState null
 	[span, setSpan] = useState ['2023-10-03', '2023-10-14']
+	[multi, setMulti] = useState new Set []#['2023-10-03', '2023-10-14']
 	# [span, setSpan] = useState ['2023-10-03', '2023-10-14']
+	marked = ['2023-10-05']
 
 	onChange = (newDate) -> setDate newDate
 	onChangeSpan = (newSpan) -> setSpan newSpan
+	onChangeMulti = (newMulti) -> setMulti newMulti
 
 	_ Box, {title: 'Calendar'},
 		_ Box1, {title: 'mode = month', s: 'xr__'},
@@ -483,9 +502,23 @@ CalendarDemo = () ->
 			_ Item, {desc: 'scale 1.2', s: 'mr20'},
 				_ Calendar, {selected: date, onChange, scale: 1.2}
 
+		_ Box1, {title: 'double = true'},
+			_ Item, {desc: 'Multi', s: 'mr20'},
+				_ Calendar, {selected: multi, marked, double: true, onChange: onChangeMulti}
+			_ {s: 'xrc_ bgbe p30'},
+				_ Item, {desc: 'Look = beige', s: 'mr20'},
+					_ Calendar, {selected: multi, marked, look: 'beige', double: true, onChange: onChangeMulti}
+			_ {s: 'xrc_ bg5'},
+				_ Item, {desc: 'Single select', s: 'mr20'},
+					_ Calendar, {selected: date, double: true, onChange, dev: true}
+
 		_ Box1, {title: 'selected = [] (range)', s: 'xr__'},
 			_ Item, {desc: '', s: 'mr20'},
 				_ Calendar, {selected: span, onChange: onChangeSpan}
+
+		_ Box1, {title: 'selected = Set [] (multi)', s: 'xr__'},
+			_ Item, {desc: '', s: 'mr20'},
+				_ Calendar, {selected: multi, onChange: onChangeMulti}
 
 		_ Box1, {title: 'mode = month (default)', s: 'xr__'},
 			_ Item, {desc: 'scale 1.0 = default', s: 'mr20'},
