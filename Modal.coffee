@@ -37,21 +37,33 @@ import ClientOnlyWrapper from 'uilib/ClientOnlyWrapper'
 
 # 	return createPortal children, container
 
-export Portal = ({children, rootSelector = '#__next'}) ->
-  [container, setContainer] = React.useState(null)
 
-  React.useEffect(() ->
-    newContainer = document.createElement('div')
-    document.body.appendChild(newContainer)
-    setContainer(newContainer)
+# --------------- MAKE SURE BODY IS POSITION RELATIVE --------------------
+export Portal = ({children, rootSelector = '#__next', dataset = {}}) ->
+	[container, setContainer] = React.useState(null)
 
-    return () -> document.body.removeChild(newContainer)
-  , [])
+	React.useEffect(() ->
+		newContainer = document.createElement('div')
+		newContainer.style.position = 'absolute'
+		newContainer.style.top = 0
+		newContainer.style.left = 0
+		newContainer.style.width = '100%'
+		newContainer.style.height = '100%'
+		newContainer.style.zIndex = 100
+		newContainer.style.pointerEvents = 'none' 
+		for k, v of dataset
+			newContainer.dataset[k] = v
+		rootElement = document.querySelector(rootSelector) || document.body
+		rootElement.appendChild(newContainer)
+		setContainer(newContainer)
 
-  if container?
-    return createPortal children, container
-  else
-    return null
+		return () -> rootElement.removeChild(newContainer)
+	, [rootSelector])  # Include rootSelector in the dependency array if its change should re-run this effect
+
+	if container?
+		return createPortal children, container
+	else
+		return null
 
 
 # Usage 1:
@@ -71,8 +83,12 @@ export Portal = ({children, rootSelector = '#__next'}) ->
 # Result: MyModal always rendered even when open=false so little worse perf but state and useCall will never
 #					reset between open/close of modal.
 
+modalIdCounter = 0
+
 export default Modal = ({s, open, children, rootSelector = '#__next'}) ->
 	[ready, setReady] = useState false
+	ref = useRef null
+	[modalId] = useState modalIdCounter++
 
 	useEffect () ->
 		timeout = setTimeout (-> setReady true), 100 # offset so if page is refreshed with open = true, animation plays
@@ -80,20 +96,26 @@ export default Modal = ({s, open, children, rootSelector = '#__next'}) ->
 	, []
 
 
-	onEntering = () ->
-		document.querySelector(rootSelector)?.style.filter = 'blur(4px)'
+	onEntering = (args...) ->
+		rootChildren = document.querySelector(rootSelector)?.children || []
+		self = document.querySelector(rootSelector)?.querySelector("div[data-modal-id=\"#{modalId}\"]")
+		for child in rootChildren
+			if child != self then child.style.filter = 'blur(4px)'
 
 	onExiting = () ->
-		document.querySelector(rootSelector)?.style.filter = 'none'
+		rootChildren = document.querySelector(rootSelector)?.children || []
+		for child in rootChildren
+			child.style.filter = 'none'
 
 	_ ClientOnlyWrapper, {},
 		_ CSSTransition, {in: open && ready, unmountOnExit: true, timeout: 300, classNames: "aniModal", onExiting, onEntering},
-			_ Portal, {rootSelector},
-				_ {s: "#{s} posa w100% p0_20 z111 top15vh <500[top5vh] xrc_ xg1"},
+			_ Portal, {rootSelector, dataset: {modalId: modalId}},
+				_ {s: "#{s} posa w100% p0_20 z111 top15vh <500[top5vh] xrc_ xg1 pea", ref},
 					children
-				_ {s: 'posf w100% h100% z110 bgbk-2 xrcc top0 lef0', className: 'backdrop'}
+				_ {s: 'posf w100% h100% z110 bgbk-2 xrcc top0 lef0 pea', className: 'backdrop'}
 
 				# _ 'svg', {height: 0, width: 0},
 				# 	_ 'filter', {id: "blurFilter"},
 				# 		_ 'feGaussianBlur', {stdDeviation: 4}
+
 
