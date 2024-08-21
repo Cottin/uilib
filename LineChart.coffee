@@ -7,8 +7,8 @@ import {motion} from "framer-motion"
 import {useFela, colors} from 'setup'
 
 
-addPadding = (percentage, padding = 5) ->
-	return padding + percentage * (100 - 2 * padding) / 100
+addPadding = (percentage, paddingTop = 5, paddingBottom = 0) ->
+	return paddingTop + percentage * (100 - (paddingTop + paddingBottom)) / 100
 
 defaultLook =
 	circle:
@@ -68,7 +68,8 @@ specialMerge = (left, right) ->
 		return right
 
 
-export default LineChart = ({data, max, s, look: userLook = {}, onClick}) ->
+export default LineChart = ({data: dataProp, max, s, look: userLook = {}, onClick}) ->
+	data = if _isNil dataProp then [] else dataProp
 	look = mergeLook defaultLook, userLook
 
 	len = maxIn _map(_length, data)
@@ -80,8 +81,8 @@ export default LineChart = ({data, max, s, look: userLook = {}, onClick}) ->
 
 	if maxToUse == 0 then maxToUse = 0.05
 
-	perY = (point, skip) -> addPadding(100 - 100 * (point / maxToUse), 14) + if skip then 0 else '%'
-	perX = (idx, skip) -> addPadding(100 * (idx / (len-1)), 5) + if skip then 0 else '%'
+	perY = (point, skip) -> addPadding(100 - 100 * (point / maxToUse), 10, 16) + if skip then 0 else '%'
+	perX = (idx, skip) -> addPadding(100 * (idx / (len-1)), 5, 5) + if skip then 0 else '%'
 
 	itemWidth = 100 / len
 
@@ -102,7 +103,9 @@ export default LineChart = ({data, max, s, look: userLook = {}, onClick}) ->
 								break
 
 			else otherPerY = perY(data[otherListIdx][idx]?.value, true)
-			if myPerY >= otherPerY then return amount + 1 else return -1 * amount
+			if myPerY > 75 then return -1 * amount
+			else if myPerY >= otherPerY then return amount + 1
+			else return -1 * amount
 
 		else throw new Error 'not yet implemented'
 
@@ -136,8 +139,8 @@ export default LineChart = ({data, max, s, look: userLook = {}, onClick}) ->
 	onClickPoint = (point) ->
 		onClick? point
 
-	_ {s: "bgwh h100% xrbe posr #{s}"},
-		_ 'svg', {s: "h100% w100% posa z0 _fade1"},
+	_ {s: "bgwh h100% posr #{s}"},
+		_ 'svg', {s: "h100% w100% posa z0 _fade1 ovv"},
 
 			$ pointsList, mapI (points, listIdx) ->
 				$ points, mapI ({line}, idx) ->
@@ -156,13 +159,13 @@ export default LineChart = ({data, max, s, look: userLook = {}, onClick}) ->
 
 						_ motion.circle, {animate: {cx, cy, opacity: 1,
 						...(selected && stx(vars.circleSelected.default) || stx(vars.circle.default))},
-						initial: {cx, cy, opacity: 0}, transition: {ease: "easeOut"},
+						initial: {cx, cy, opacity: 0, r: 0, strokeWidth: 0}, transition: {ease: "easeOut"},
 						variants: selected && stx(vars.circleSelected) || stx(vars.circle)}
 
 						_ motion.text, {animate: {x: cx, y: valueY, opacity: 1,
 						...(selected && stx(vars.valueSelected.default) || stx(vars.value.default))},
 						transition: {ease: "easeOut"}, textAnchor: "middle", alignmentBaseline: "middle",
-						initial: { x: cx, y: valueY, opacity: 0},
+						initial: {x: cx, y: valueY, opacity: 0, fontWeight: 300},
 						variants: selected && stx(vars.valueSelected) || stx(vars.value)}, !_isNil(sValue) && sValue || value
 
 			$ pointsList[0], mapI ({cx, cy, valueY, value, sValue, label, rectX, line, selected}, idx) ->
@@ -175,8 +178,8 @@ export default LineChart = ({data, max, s, look: userLook = {}, onClick}) ->
 					initial: {x: rectX, opacity: 0}, y: 0, s: '_fade1', fill: 'rgba(0, 0, 0, 0)',
 					variants: selected && vars.rectSelected || vars.rect}
 
-					_ motion.text, {animate: {x: cx, y: addPadding(100, 8)+'%', opacity: 1, fill: colors('bk-6')},
-					initial: {x: cx, y: addPadding(100, 8)+'%', opacity: 0}, transition: {ease: "easeOut"},
+					_ motion.text, {animate: {x: cx, y: addPadding(100, 8, 8)+'%', opacity: 1, fill: colors('bk-6')},
+					initial: {x: cx, y: addPadding(100, 8, 8)+'%', opacity: 0}, transition: {ease: "easeOut"},
 					textAnchor: "middle", alignmentBaseline: "middle", s: 'fabk-37-14'}, label
 					
 

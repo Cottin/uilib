@@ -1,10 +1,11 @@
 import React from 'react'
 
+fr = React.forwardRef
 
 import {useFela, colors} from 'setup'
 import SVGtriangleSmall from 'icons/triangleSmall.svg'
 
-export default Tooltip = ({s, sInner, sTriangle, children, direction = 'up', className, ...rest}) ->
+export default Tooltip = fr ({s, sInner, sTriangle, children, direction = 'up', className, ...rest}, ref) ->
 	if direction == 'up'
 		sDir = 'bot100% lef50% pb5'
 		transform = 'translateX(-50%)'
@@ -26,7 +27,7 @@ export default Tooltip = ({s, sInner, sTriangle, children, direction = 'up', cla
 		sTri = 'rig100% mr-3px rot270'
 
 
-	_ {s: "#{sDir} posa op0 z9999999 pen #{s}", style: {transform}, className: "tooltip-panel #{className}",
+	_ {s: "#{sDir} posa op0 z9999999 pen #{s}", ref, style: {transform}, className: "tooltip-panel #{className}",
 	...rest},
 		_ {s: "bggya op0.98 br5 posr xccc tac fawh-97-14 #{sInner}"},
 			_ SVGtriangleSmall, {s: "#{sTri} posa w10 fillgya #{sTriangle}"}

@@ -38,12 +38,12 @@ DynamicDropdownCurrency = () -> 'Comment back in again if your project uses curr
 
 export default Demo = () ->
 	_ {},
+		_ LineChartDemo, {}
 		_ CalendarDemo, {}
 		_ ButtonDemo, {}
 		_ Tooltip2Demo, {}
 		_ TooltipDemo, {}
 		_ DropdownDemo, {}
-		# _ LineChartDemo, {}
 		_ TextboxDemo, {}
 		_ SwitchDemo, {}
 		_ LinkButtonDemo, {}
@@ -534,11 +534,12 @@ CalendarDemo = () ->
 labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep']
 
 data = [
-	$ [152, 169, null, 104, 140, 159, 182, 192, 191], mapI (value, i) -> {label: labels[i], value}
+	$ [152, 0, null, 104, 140, 159, 182, 192, 191], mapI (value, i) -> {label: labels[i], value}
 	$ [null, 154, 114, 144, null, null, 120, 102, null], mapI (value, i) -> {label: labels[i], value}
 	$ [80, 132, 124, 134, 110, 120], mapI (value, i) -> {label: labels[i], value}
 	$ [83, 112, 164, 174, 140, 110], mapI (value, i) -> {label: labels[i], value}
 ]
+console.log 'data', data
 
 
 chartLook =
