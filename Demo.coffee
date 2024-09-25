@@ -1,4 +1,4 @@
-import _equals from "ramda/es/equals"; import _map from "ramda/es/map"; import _replace from "ramda/es/replace"; import _toPairs from "ramda/es/toPairs"; #auto_require: _esramda
+import _equals from "ramda/es/equals"; import _filter from "ramda/es/filter"; import _map from "ramda/es/map"; import _replace from "ramda/es/replace"; import _test from "ramda/es/test"; import _toPairs from "ramda/es/toPairs"; #auto_require: _esramda
 import {mapI, $} from "ramda-extras" #auto_require: esramda-extras
 
 import React, {useState, useRef, useEffect, useLayoutEffect} from 'react'
@@ -38,12 +38,12 @@ DynamicDropdownCurrency = () -> 'Comment back in again if your project uses curr
 
 export default Demo = () ->
 	_ {},
+		_ DropdownDemo, {}
 		_ LineChartDemo, {}
 		_ CalendarDemo, {}
 		_ ButtonDemo, {}
 		_ Tooltip2Demo, {}
 		_ TooltipDemo, {}
-		_ DropdownDemo, {}
 		_ TextboxDemo, {}
 		_ SwitchDemo, {}
 		_ LinkButtonDemo, {}
@@ -287,6 +287,9 @@ DropdownDemo = () ->
 		setSelected item
 
 	_ Box, {title: 'Dropdown'},
+		_ AutoCompleteAsync, {}
+		_ AutoCompleteSub, {}
+		_ AutoCompleteNumbers, {}
 		_ Box1, {title: ''},
 			_ Item, {desc: ''},
 				_ Dropdown, {s: 'xw200', placeholder: 'Select country', items: countries, onChange, selected}
@@ -316,7 +319,6 @@ DropdownDemo = () ->
 		# 	_ Item, {desc: ''},
 		# 		_ Dropdown, {s: 'xw200', placeholder: 'Select country', items: countries, onChange, selected,
 		# 		autoComplete: true}
-		_ AutoCompleteSub, {}
 
 		_ AutoCompleteGroupedSub, {}
 
@@ -350,6 +352,40 @@ AutoCompleteGroupedSub = () ->
 	_ Box1, {title: 'Auto complete'},
 		_ Item, {desc: ''},
 			_ Dropdown, {s: 'xw200', placeholder: 'Select country', items, groupBy, onChange, selected, autoComplete: true}
+
+AutoCompleteAsync = () ->
+	allWords = ['win', 'wind', 'winded', 'winder', 'window', 'winds', 'windy', 'wine', 'winery', 'wing', 'wings', 'wink', 'winner', 'winning', 'winter', 'wintery', 'wide', 'widen', 'wider', 'widow', 'width', 'wild', 'wilder', 'will', 'willow', 'willing', 'wilt', 'wily', 'wish', 'wished', 'wisp', 'wispy', 'wise', 'wiser', 'wisdom', 'wit', 'witch', 'with', 'witless', 'witty']
+	[words, setWords] = useState []
+
+	# words = ['win', 'wind', 'winded', 'winder', 'window', 'winds', 'windy', 'wine']
+	[selected, setSelected] = useState null
+
+	onChange = (item) ->
+		setSelected item
+
+	onTextChange = (text) ->
+		filteredWords = $ allWords, _filter _test(new RegExp("#{text}", 'i'))
+		await sleep 1000
+		setWords filteredWords
+
+	_ Box1, {title: 'Auto complete async'},
+		_ Item, {desc: ''},
+			_ Dropdown, {s: 'xw200', placeholder: 'Select country', items: words, onTextChange,
+			selected, onChange, autoComplete: 'async'}
+
+AutoCompleteNumbers = () ->
+	items = [1, 2, 3, 4, 5, 6]
+	[selected, setSelected] = useState null
+
+	onChange = (item) ->
+		setSelected item
+
+	_ Box1, {title: 'Auto complete numbers'},
+		_ Item, {desc: ''},
+			_ Dropdown, {s: 'xw200', placeholder: 'Select numbers', items, onChange, selected,
+			autoComplete: true}
+			_ Dropdown, {s: 'xw200 mt50', placeholder: 'Select numbers', items, onChange, selected,
+			autoComplete: true, disabled: true}
 
 DropdownCurrencySub = () ->
 	[selected, setSelected] = useState null

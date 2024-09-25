@@ -1,7 +1,7 @@
 import _any from "ramda/es/any"; import _equals from "ramda/es/equals"; import _filter from "ramda/es/filter"; import _has from "ramda/es/has"; import _indexOf from "ramda/es/indexOf"; import _isEmpty from "ramda/es/isEmpty"; import _isNil from "ramda/es/isNil"; import _test from "ramda/es/test"; import _type from "ramda/es/type"; #auto_require: _esramda
 import {$, sf0} from "ramda-extras" #auto_require: esramda-extras
 
-import React, {useState, useLayoutEffect, useRef} from 'react'
+import React, {useState, useLayoutEffect, useRef, forwardRef, useImperativeHandle} from 'react'
 
 import SVGarrow from 'icons/arrow.svg'
 import {useFela} from 'setup'
@@ -10,7 +10,7 @@ import {useOuterClick} from './reactUtils'
 
 getText = (item) ->
 	if _isNil(item) then ''
-	else item.text || item.name || _type(item) == 'String' && item || item.id
+	else item.text || item.name || _type(item) == 'String' && item || _type(item) == 'Number' && item || item.id
 
 getKey = (item) ->
 	if _has 'id', item then item.id
@@ -46,21 +46,35 @@ DefaultSelected = ({selected}) ->
 
 
 # NOTE: render props, eg. renderItem causes hook error with styleSetup/fela so use Component props for now
-export default Dropdown = ({s, selected, onChange, items, placeholder = '\u00A0', error, openAtStart = false,
-onClose, autoComplete = false, filterItem = defaultFilterItem, groupBy, disabled, onEnter,
-Item = DefaultItem, Group = DefaultGroup, Empty = DefaultEmpty,
-Placeholder = DefaultPlaceholder, Selected = DefaultSelected}) ->
+export default Dropdown = forwardRef ({s, selected, onChange, items, onTextChange, placeholder = '\u00A0', error,
+openAtStart = false, onClose, autoComplete = false, onKeyDown, filterItem = defaultFilterItem, groupBy,
+disabled, onEnter, Item = DefaultItem, Group = DefaultGroup, Empty = DefaultEmpty,
+Placeholder = DefaultPlaceholder, Selected = DefaultSelected}, externalRef) ->
 	[isOpen, setIsOpen] = useState openAtStart
 	[idx, setIdx] = useState null
 	[text, setText] = useState ''
 	[autoCompleteFake, setAutoCompleteFake] = useState null
 	ref = useRef null
-	useOuterClick ref, -> close()
+	# useOuterClick ref, (e) ->
+	# 	if isOpen
+	# 		close()
+	# 		e.stopPropagation()
 	refItems = useRef null
 	if _isNil items then throw new Error 'items cannot be nil'
-	filteredItems = if autoComplete then $ items, _filter (item) -> filterItem item, text else items
+	if autoComplete == 'async' then filteredItems = items
+	else if autoComplete then filteredItems = $ items, _filter (item) -> filterItem item, text 
+	else filteredItems = items
+
 	refText = useRef null
 
+	useImperativeHandle externalRef, () ->
+		openAndFocus: () ->
+			setIsOpen true
+			setTimeout () ->
+				console.log 'focus from external', refText.current
+				refText.current?.focus()
+			, 0
+	
 
 	###### DYNAMIC POSITIONING #################################################################################
 	calcPosition = (itemsEl, dropdownEl) ->
@@ -129,7 +143,7 @@ Placeholder = DefaultPlaceholder, Selected = DefaultSelected}) ->
 		if focus # option to refocus
 			setTimeout (() -> ref.current?.focus()), 0
 
-	open = (startIdx = null) ->
+	open = (startIdx = null, skipAuto = false) ->
 		setIsOpen true
 		if selected
 			selIdx = _indexOf selected, filteredItems
@@ -139,11 +153,13 @@ Placeholder = DefaultPlaceholder, Selected = DefaultSelected}) ->
 			else if autoComplete then setIdx 0
 			else # dont set idx
 
-		if autoComplete
+		if autoComplete && !skipAuto
 			setText ''
+			console.log 'selected', selected
 			if selected
 				setAutoCompleteFake getText selected
 				selectText()
+				onTextChange? getText selected
 			else
 				focusText()
 
@@ -163,10 +179,12 @@ Placeholder = DefaultPlaceholder, Selected = DefaultSelected}) ->
 			setIsOpen true
 			open()
 
-	onClickItem = (item, idx) ->
+	onClickItem = (item, idx, e) ->
 		onChange item, idx
+		close true
+		e.stopPropagation()
 
-	onKeyDown = (e) ->
+	onKeyDownSelf = (e) ->
 		if disabled then return
 		if e.key == 'ArrowDown'
 			if isOpen == false then open 0
@@ -185,16 +203,31 @@ Placeholder = DefaultPlaceholder, Selected = DefaultSelected}) ->
 
 		else if e.key == 'Enter' || e.key == ' '
 			if isOpen
-				if idx != null then onChange filteredItems[idx], idx
-				close true
+				if e.key == ' ' && autoComplete then return
+				else
+					if idx != null then onChange filteredItems[idx], idx
+					close true
 			else
 				if e.key == 'Enter' && onEnter then onEnter()
 				else
 					open 0
+			e.preventDefault()
 
-		else if e.key == 'Escape' || e.key == 'Tab'
+		else if e.key == 'Escape'
+			if isOpen then close true
+
+		else if e.key == 'Tab'
 			if isOpen then close()
 
+		else if e.key.length == 1
+			if autoComplete && isOpen == false
+				open 0, true
+				if autoCompleteFake then setAutoCompleteFake null
+				setText e.key
+				focusText()
+
+		else
+			if !isOpen then onKeyDown?(e)
 
 		if autoComplete then e.stopPropagation() # stop so it's not also handled in button a second time
 
@@ -212,6 +245,7 @@ Placeholder = DefaultPlaceholder, Selected = DefaultSelected}) ->
 			onChange null
 		setText e.currentTarget.value
 		setIdx 0
+		onTextChange? e.currentTarget.value
 
 	onClickText = (e) ->
 		e.stopPropagation() # stop so not closed from buttons onClick handler
@@ -223,7 +257,7 @@ Placeholder = DefaultPlaceholder, Selected = DefaultSelected}) ->
 
 	_ 'a', {s: "fabk-77-14 p10_15 outgyc-2 pr35 #{sError} _fade1 br4
 	xr_c #{sBase} hoc1(fillbk-8) posr #{s}", onBlur,
-	onClick, onKeyDown, ref, tabIndex: 0},
+	onClick, onKeyDown: onKeyDownSelf, ref, tabIndex: 0},
 		_ SVGarrow, {s: 'w20 fillbk-4 posa rig12', className: 'c1'}
 
 		if autoComplete && isOpen
@@ -231,7 +265,7 @@ Placeholder = DefaultPlaceholder, Selected = DefaultSelected}) ->
 			if autoCompleteFake then textToUse = autoCompleteFake
 			_ Fragment,
 				_ 'input', {s: 'bord0 out0 bg0 posa w100% h100% lef0 top0 fabk-77-14 p10_15', type: 'text',
-				ref: refText, value: textToUse, onKeyDown, onChange: onChangeText, onClick: onClickText,
+				ref: refText, value: textToUse, onKeyDown: onKeyDownSelf, onChange: onChangeText, onClick: onClickText,
 				autoFocus: openAtStart}
 				_ {s: 'vish'}, '.'
 		else if !selected then _ Placeholder, {placeholder}
@@ -245,7 +279,7 @@ Placeholder = DefaultPlaceholder, Selected = DefaultSelected}) ->
 					filteredItems.map (item, i) ->
 						isMarked = idx == i 
 						isSelected = _equals(selected, item)
-						itemProps = {item, idx, i, isSelected, isMarked, onClick: () -> onClickItem item, i}
+						itemProps = {item, idx, i, isSelected, isMarked, text: textToUse, onClick: (e) -> onClickItem item, i, e}
 						if groupBy
 							group = groupBy item
 							if !_equals group, lastGroup
