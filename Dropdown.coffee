@@ -219,6 +219,9 @@ Placeholder = DefaultPlaceholder, Selected = DefaultSelected}, externalRef) ->
 		else if e.key == 'Tab'
 			if isOpen then close()
 
+		else if e.key == 'Delete' || e.key == 'Backspace'
+			if !isOpen then onChange null
+
 		else if e.key.length == 1
 			if autoComplete && isOpen == false
 				open 0, true
