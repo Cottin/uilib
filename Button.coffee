@@ -129,7 +129,7 @@ export default Button = React.forwardRef ({s, sChildren: sChildrenProp, sBg: sBg
 		sChildren += " br4 p#{pvSize*2.4}_#{phSize}"
 
 		if look == 'blue'
-			sButton += " bgwh xg1 #{disabled && 'fabk-1' || 'hofo(fabk-6 bgbun>1-3 bordbk-2) out0' }"
+			sButton += " bgwh xg1 #{disabled && 'fabk-1' || 'hofo(fabk-6 bgbu bordbk-2) out0' }"
 			spinnerClr = 'buk-6'
 			sSpinner += " h80%"
 		else if look == 'text'
