@@ -11,7 +11,7 @@ export default Button = React.forwardRef ({s, sChildren: sChildrenProp, sBg: sBg
 
 	if href then throw new Error 'href no longer supported in Button, use LinkButton'
 
-	sButton = "posr p0 xrcc curp bg0"
+	sButton = "posr p0 xrcc bg0 #{!disabled && 'curp'}"
 	sBg = "br3 iw100% h100% posa xrcc"
 	sChildren = "posr"
 	spinnerClr = 'wh'
