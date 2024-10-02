@@ -163,9 +163,13 @@ export default Button = React.forwardRef ({s, sChildren: sChildrenProp, sBg: sBg
 			sChildren += " fabuk-67-#{fSize} ho(fabuk)"
 			spinnerClr = 'buk'
 
+	else if kind == 'custom'
+		sChildren += " xrcc"
+
+
 
 	onClickSelf = (e) ->
-		if wait || disabled || success then return e.preventDefault()
+		if wait || disabled || success then return e.preventDefault()
 		onClick? e
 
 	onSubmit = (e) ->
@@ -174,7 +178,7 @@ export default Button = React.forwardRef ({s, sChildren: sChildrenProp, sBg: sBg
 	extra = {onClick: onClickSelf}
 	if rest.type == 'submit' then extra.onSubmit = (e) -> if wait then e.preventDefault()
 
-	if wait || success then sChildren += " op0 pen"
+	if wait || success then sChildren += " op0 pen"
 
 
 	# Impossible to animate from width=100 to unset/auto (https://css-tricks.com/using-css-transitions-auto-dimensions/).
@@ -183,7 +187,7 @@ export default Button = React.forwardRef ({s, sChildren: sChildrenProp, sBg: sBg
 	# animating out again, the animation does not start from 0 but 20 and looks less bad.
 	# Alternative would be min-width: 0 and use _ 'svg', {s: 'h100%', viewBox: "0 0 1 1"} as a placeholder
 	# when Spinner/Checkmark is not shown, but we don't want unnessecary elements and current way good enough
-	if wait || success
+	if wait || success
 		sBg += " br50% iw20"
 
 	_ 'button', {s: "#{sButton} #{s}", className, ref, ...extra, ...rest},
