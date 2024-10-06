@@ -119,3 +119,10 @@ export default Modal = ({s, open, children, rootSelector = '#__next'}) ->
 				# 		_ 'feGaussianBlur', {stdDeviation: 4}
 
 
+
+# If a component inside popup uses a Portal it need to set the dontClose dataset property to avoid auto-cloing
+export hasDontCloseAncestor = (element) ->
+	while element
+		if element.dataset.dontClose == 'true' then return true
+		element = element.parentElement
+	return false

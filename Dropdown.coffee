@@ -12,7 +12,7 @@ getText = (item) ->
 	if _isNil(item) then ''
 	else item.text || item.name || _type(item) == 'String' && item || _type(item) == 'Number' && item || item.id
 
-getKey = (item) ->
+defaultGetKey = (item) ->
 	if _has 'id', item then item.id
 	else if _has 'key', item then item.key
 	else getText(item) || sf0 item
@@ -48,7 +48,7 @@ DefaultSelected = ({selected}) ->
 # NOTE: render props, eg. renderItem causes hook error with styleSetup/fela so use Component props for now
 export default Dropdown = forwardRef ({s, selected, onChange, items, onTextChange, placeholder = '\u00A0', error,
 openAtStart = false, onClose, autoComplete = false, onKeyDown, filterItem = defaultFilterItem, groupBy,
-disabled, onEnter, Item = DefaultItem, Group = DefaultGroup, Empty = DefaultEmpty,
+getKey = defaultGetKey, disabled, onEnter, Item = DefaultItem, Group = DefaultGroup, Empty = DefaultEmpty,
 Placeholder = DefaultPlaceholder, Selected = DefaultSelected}, externalRef) ->
 	[isOpen, setIsOpen] = useState openAtStart
 	[idx, setIdx] = useState null
@@ -74,6 +74,8 @@ Placeholder = DefaultPlaceholder, Selected = DefaultSelected}, externalRef) ->
 				console.log 'focus from external', refText.current
 				refText.current?.focus()
 			, 0
+		resetAutoComplete: () ->
+			setAutoCompleteFake null
 	
 
 	###### DYNAMIC POSITIONING #################################################################################
@@ -114,6 +116,7 @@ Placeholder = DefaultPlaceholder, Selected = DefaultSelected}, externalRef) ->
 	useLayoutEffect () ->
 		if refItems.current && ref.current && isOpen
 			idxItem = refItems.current.querySelector("[data-i=\"#{idx}\"]");
+			console.log 'idxItem', idxItem
 			idxItem?.scrollIntoView({ behavior: 'instant', block: 'nearest', inline: 'start' })
 		return undefined
 	, [idx]
