@@ -133,9 +133,9 @@ export default Calendar = ({s, mode = 'month', double = false, selected, marked,
 	extraHight = isMonth && 1.1 || 1.0
 
 	if look == 'beige'
-		clr = {bg1: 'wh', bg2: 'wh', bg3: 'bun', bg4: 'bun-3', bg5: 'bun-3', ho1: 'bk-1', tx1: 'bk-6', tx2: 'bk-4', tx3: 'bk-6', tx4: 'bk', tx5: 'wh', ar: 'bk-3', sh: '_sh6', bo1: 'bun<1'}
+		clr = {bg1: 'wh', bg2: 'wh', bg3: 'bun', bg4: 'bun-3', bg5: 'bun-3', ho1: 'bk-1', tx1: 'bk-6', tx2: 'bk-4', tx3: 'bk-6', tx4: 'bk', tx5: 'wh', ar: 'bk-3', sh: '_sh6', bo1: 'bun<10'}
 	else
-		clr = {bg1: 'buc>1', bg2: 'buc-9', bg3: 'buc<1', bg4: 'buc-9', bg5: 'wh-2', ho1: 'buc<1-9', tx1: 'wh-9', tx2: 'wh-4', tx3: 'wh-8', tx4: 'wh', tx5: 'wh', ar: 'wh-8', sh: '_sh1', bo1: 'buc<1'}
+		clr = {bg1: 'buc>10', bg2: 'buc-9', bg3: 'buc<10', bg4: 'buc-9', bg5: 'wh-2', ho1: 'buc<10-9', tx1: 'wh-9', tx2: 'wh-4', tx3: 'wh-8', tx4: 'wh', tx5: 'wh', ar: 'wh-8', sh: '_sh1', bo1: 'buc<10'}
 
 	_ {s: "w#{width} h#{size*extraHight} #{clr.sh} bg#{clr.bg1} br6 xc__ #{!dev && 'ovh'} #{s}", className, onClick},
 		_ {s: "xrcc bg#{clr.bg2} #{isYear && 'h25%' || 'h20%'} posr"},
@@ -172,7 +172,7 @@ Year = ({year, selected, onClickDate, scale, dev, ...flippedProps}) ->
 YearMonth = ({year, month, selected, onClickDate, scale, dev}) ->
 	date = df.yyyymmdd "#{year}-#{month}-01"
 	isSelected = df.isSame date, selected, 'month'
-	sSelected = isSelected && 'bgbuc<1 fawh ho(bgbuc<1)'
+	sSelected = isSelected && 'bgbuc<10 fawh ho(bgbuc<10)'
 	text = _toUpper(df.format 'MMM', date) + if dev then date[3] else ''
 	_ {s: "w24% h32% xrcc tac fawh-87-#{Math.ceil scale*13} useln ho(bgbuc-9 fawh) br6 curp #{sSelected}",
 	onClick: () -> onClickDate date}, text
@@ -203,6 +203,7 @@ Month = ({month, double, selected, marked, onClickDate, onHoverDate, hovered, sc
 Day = ({date, text, half, showHalf = true, onClickDate, onHoverDate, hovered, selected, marked, scale, clr}) ->
 	if half && !showHalf then return _ {s: "w#{100/7}% h#{100/6}%"}
 
+
 	white = if half then 'wh-6' else 'wh'
 	if isRange selected
 		[start, end] = selected
@@ -213,10 +214,14 @@ Day = ({date, text, half, showHalf = true, onClickDate, onHoverDate, hovered, se
 		else if start && !end && date > start
 			if date < hovered then sSel = "bg#{clr.bg4} fa#{white} br0"
 			else if date == hovered then sSel = "bg#{clr.bg4} fa#{white} br0_4_4_0"
+
+		sWeekend = if df.dayOfWeek(date) >= 5 && !(start <= date && end >= date) then 'op0.5' else ''
 	else if isMulti selected
 		sSel = selected.has(date) && "bg#{clr.bg3} fa#{clr.tx5} ho(bg#{clr.bg3} fa#{clr.tx5})"
+		sWeekend = if df.dayOfWeek(date) >= 5 && !(selected.has(date)) then 'op0.5' else ''
 	else
 		sSel = selected && selected == date && "bg#{clr.bg3} fawh ho(bg#{clr.bg3})"
+		sWeekend = if df.dayOfWeek(date) >= 5 && selected != date then 'op0.5' else ''
 
 
 	if marked && _includes date, marked then sMarked = "bord#{clr.bo1}"
@@ -224,7 +229,7 @@ Day = ({date, text, half, showHalf = true, onClickDate, onHoverDate, hovered, se
 	extra = if isRange selected then {onMouseOver: () -> onHoverDate date} else {}
 
 	# _ {s: "w#{100/7}% h#{100/6}% br4 xg1 xrcc tac fawh-#{half && 4 || 8}7-#{Math.ceil scale*13} 
-	_ {s: "w#{100/7}% h#{100/6}% br4 xg1 xrcc tac fa#{half && clr.tx2 || clr.tx3}7-#{Math.ceil scale*13} 
+	_ {s: "w#{100/7}% h#{100/6}% br4 #{sWeekend} xg1 xrcc tac fa#{half && clr.tx2 || clr.tx3}7-#{Math.ceil scale*13} 
 	ho(bg#{clr.bg4} fa#{clr.tx4}) #{sSel} #{sMarked} curp useln", ...extra, onClick: () -> onClickDate date},
 		if getToday() == date
 			_ {s: "br50% h80% w80% xrcc bg#{clr.bg5}"}, text

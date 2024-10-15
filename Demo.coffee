@@ -57,7 +57,7 @@ Box = ({title, s, children}) ->
 
 Box1 = ({s, s2, title, children}) -> 
 	_ {s: "borlbk-1 p30_10_10_10 m20 posr #{s2}"},
-		_ {s: 'posa top-10 lef-5 bgbk>5 bordbk-1 p2_10 br3 fawh-97-14'}, title
+		_ {s: 'posa top-10 lef-5 bgbk>50 bordbk-1 p2_10 br3 fawh-97-14'}, title
 		_ {s: "#{s}"},
 			children
 
@@ -307,7 +307,7 @@ DropdownDemo = () ->
 						_ {s: 'fabk-46-11'}, selected.continent
 				renderItem: ({item, idx, i}) ->
 						sIdx = idx == i && 'bggyb-5'
-						sSel = _equals(selected, item) && "bgbue fawh ho(bgbue<1) #{idx == i && 'bgbue<1'}"
+						sSel = _equals(selected, item) && "bgbue fawh ho(bgbue<10) #{idx == i && 'bgbue<10'}"
 						_ {s: "p10_20 ho(bggyb-5) #{sIdx} #{sSel} _fade3 useln whn", key: item.text,
 						onClick: -> onChange item},
 							_ {}, item.text

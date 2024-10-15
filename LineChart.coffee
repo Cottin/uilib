@@ -26,7 +26,7 @@ defaultLook =
 			fill: colors 'bue'
 			r: 8
 		hover:
-			fill: colors 'bue<1'
+			fill: colors 'bue<10'
 	line:
 		default:
 			stroke: colors('gyb')

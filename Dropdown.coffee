@@ -6,7 +6,7 @@ import React, {useState, useLayoutEffect, useRef, forwardRef, useImperativeHandl
 import SVGarrow from 'icons/arrow.svg'
 import {useFela} from 'setup'
 
-import {useOuterClick} from './reactUtils'
+import {useOuterClick, useOuterMouseDown} from './reactUtils'
 
 getText = (item) ->
 	if _isNil(item) then ''
@@ -28,7 +28,7 @@ defaultFilterGroup = (group, text) ->
 
 DefaultItem = ({item, isMarked, isSelected, i, onClick}) ->
 	sMarked = isMarked && 'bggyb-5'
-	sSel = isSelected && "bgbue fawh ho(bgbue<1) #{isMarked && 'bgbue<1'}"
+	sSel = isSelected && "bgbue fawh ho(bgbue<10) #{isMarked && 'bgbue<10'}"
 	_ {s: "p10_20 ho(bggyb-5) #{sMarked} #{sSel} _fade3 useln whn", 'data-i': i, onClick},
 		getText item
 
@@ -49,16 +49,22 @@ DefaultSelected = ({selected}) ->
 export default Dropdown = forwardRef ({s, selected, onChange, items, onTextChange, placeholder = '\u00A0', error,
 openAtStart = false, onClose, autoComplete = false, onKeyDown, filterItem = defaultFilterItem, groupBy,
 getKey = defaultGetKey, disabled, onEnter, Item = DefaultItem, Group = DefaultGroup, Empty = DefaultEmpty,
-Placeholder = DefaultPlaceholder, Selected = DefaultSelected}, externalRef) ->
+Placeholder = DefaultPlaceholder, Selected = DefaultSelected, blockOuterClick = false}, externalRef) ->
 	[isOpen, setIsOpen] = useState openAtStart
 	[idx, setIdx] = useState null
 	[text, setText] = useState ''
 	[autoCompleteFake, setAutoCompleteFake] = useState null
 	ref = useRef null
-	# useOuterClick ref, (e) ->
-	# 	if isOpen
-	# 		close()
-	# 		e.stopPropagation()
+	refStopPropagation = useRef null
+	useOuterClick ref, (e) ->
+		if refStopPropagation.current
+			e.stopPropagation()
+			refStopPropagation.current = false
+	useOuterMouseDown ref, (e) ->
+		if isOpen && blockOuterClick
+			refStopPropagation.current = true
+			e.stopPropagation()
+
 	refItems = useRef null
 	if _isNil items then throw new Error 'items cannot be nil'
 	if autoComplete == 'async' then filteredItems = items

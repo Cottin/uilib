@@ -95,7 +95,7 @@ export default Button = React.forwardRef ({s, sChildren: sChildrenProp, sBg: sBg
 			sBg += " bg#{clr} br4"
 			sChildren += " fawh7-#{fSize}"
 			if disabled then sButton += ' op0.3'
-			else if !wait && !success then sButton += " hofoc4(bg#{clr}<3)"
+			else if !wait && !success then sButton += " hofoc4(bg#{clr}<30)"
 
 		else if look == 'text'
 			sButton += " op0.5 out0"

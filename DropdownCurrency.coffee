@@ -35,7 +35,7 @@ export default DropdownCurrency = ({selected, s, onChange, didLoad, ...rest}) ->
 	...rest, filterItem,
 	renderItem: ({item, idx, i, isSelected}) ->
 			sIdx = idx == i && 'bggyb-5'
-			sSel = isSelected && "bgbue fawh ho(bgbue<1) #{idx == i && 'bgbue<1'}"
+			sSel = isSelected && "bgbue fawh ho(bgbue<10) #{idx == i && 'bgbue<10'}"
 			extra = if item.currencySymbol then " (#{item.currencySymbol})" else ''
 			_ {s: "p10_20 ho(bggyb-5) #{sIdx} #{sSel} _fade3 useln whn", key: item.name+i,
 			onClick: -> onChange item},
