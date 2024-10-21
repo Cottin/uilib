@@ -4,6 +4,7 @@ import {$, sf0} from "ramda-extras" #auto_require: esramda-extras
 import React, {useState, useLayoutEffect, useRef, forwardRef, useImperativeHandle} from 'react'
 
 import SVGarrow from 'icons/arrow.svg'
+import SVGcross from 'icons/crossFat.svg'
 import {useFela} from 'setup'
 
 import {useOuterClick, useOuterMouseDown} from './reactUtils'
@@ -262,6 +263,11 @@ Placeholder = DefaultPlaceholder, Selected = DefaultSelected, blockOuterClick = 
 	onClickText = (e) ->
 		e.stopPropagation() # stop so not closed from buttons onClick handler
 
+	unSelect = () ->
+		onChange null
+		setAutoCompleteFake null
+		close true
+
 	# Prefer a to button since button's onClick gets triggered by pressing ENTER or SPACE while it's selected.
 	# It gets hard to reason about when onClick is actually triggered in autoComplete vs not
 
@@ -291,7 +297,8 @@ Placeholder = DefaultPlaceholder, Selected = DefaultSelected, blockOuterClick = 
 					filteredItems.map (item, i) ->
 						isMarked = idx == i 
 						isSelected = _equals(selected, item)
-						itemProps = {item, idx, i, isSelected, isMarked, text: textToUse, onClick: (e) -> onClickItem item, i, e}
+						itemProps = {item, idx, i, isSelected, isMarked, text: textToUse, unSelect,
+						onClick: (e) -> onClickItem item, i, e}
 						if groupBy
 							group = groupBy item
 							if !_equals group, lastGroup
