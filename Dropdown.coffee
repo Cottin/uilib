@@ -83,6 +83,9 @@ Placeholder = DefaultPlaceholder, Selected = DefaultSelected, blockOuterClick = 
 			, 0
 		resetAutoComplete: () ->
 			setAutoCompleteFake null
+		close: (focus) ->
+			close focus
+
 	
 
 	###### DYNAMIC POSITIONING #################################################################################
@@ -297,7 +300,7 @@ Placeholder = DefaultPlaceholder, Selected = DefaultSelected, blockOuterClick = 
 					filteredItems.map (item, i) ->
 						isMarked = idx == i 
 						isSelected = _equals(selected, item)
-						itemProps = {item, idx, i, isSelected, isMarked, text: textToUse, unSelect,
+						itemProps = {item, idx, i, isSelected, isMarked, text, unSelect,
 						onClick: (e) -> onClickItem item, i, e}
 						if groupBy
 							group = groupBy item

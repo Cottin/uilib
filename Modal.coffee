@@ -39,6 +39,7 @@ import ClientOnlyWrapper from 'uilib/ClientOnlyWrapper'
 
 
 # --------------- MAKE SURE BODY IS POSITION RELATIVE --------------------
+# NOTE: This feels unnessesarily complex and does introduce problems. However it comes from the research above I guess. But try out Portal2 below and if it works with nextjs then switch over after a while
 export Portal = ({children, rootSelector = '#__next', dataset = {}}) ->
 	[container, setContainer] = React.useState(null)
 
@@ -64,6 +65,14 @@ export Portal = ({children, rootSelector = '#__next', dataset = {}}) ->
 		return createPortal children, container
 	else
 		return null
+
+# A simplified portal by ChatGPT that works better with CSSTransition
+export Portal2 = ({children, rootSelector = '#__next'}) ->
+	# Use an existing root container, or fallback to document.body
+	rootElement = document.querySelector(rootSelector) || document.body
+
+	# Ensure children are attached immediately to avoid timing issues with CSSTransition
+	return createPortal children, rootElement
 
 
 # Usage 1:

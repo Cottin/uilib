@@ -60,12 +60,19 @@ export usePreviousValue = (value) ->
 export useChangeStateRef = (initial) ->
 	[state, setState_] = React.useState initial
 	ref = React.useRef initial
-	changeBoth = (spec) ->
+
+	changeBoth = useCallback (spec) ->
 		setState_ change spec
 		ref.current = change spec, ref.current
-	resetBoth = ->
+		return undefined
+	, []
+
+	resetBoth = useCallback () ->
 		setState_ initial
 		ref.current = initial
+		return undefined
+	, []
+	
 	return [state, ref, changeBoth, resetBoth]
 
 # Same as above but simple state
@@ -79,6 +86,21 @@ export useStateRef = (initial) ->
 		setState_ initial
 		ref.current = initial
 	return [state, ref, changeBoth, resetBoth]
+
+
+# # Workaround not to get stale state in window callbacks (mouseMove, mouseUp, ResizeObserver).
+# # eg.
+# # popup = useState {open: false, top: 120}
+# # popupStaleWorkaround =
+# export useStaleWorkaround = (state) ->
+# 	stateRef = useRef state
+
+# 	useEffect ->
+# 		stateRef.current = state
+# 		return undefined
+# 	, [state]
+
+# 	return stateRef
 
 # Assumes ref is absolutely positioned relative to a parent and returns the nessecary adjustments needed
 # to contain the ref within the viewport in shortstyle format.
