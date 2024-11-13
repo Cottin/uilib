@@ -47,7 +47,7 @@ DefaultSelected = ({selected}) ->
 
 
 # NOTE: render props, eg. renderItem causes hook error with styleSetup/fela so use Component props for now
-export default Dropdown = forwardRef ({s, selected, onChange, items, onTextChange, placeholder = '\u00A0', error,
+export default Dropdown = forwardRef ({s, sOpen, selected, onChange, items, onTextChange, placeholder = '\u00A0', error,
 openAtStart = false, onClose, autoComplete = false, onKeyDown, filterItem = defaultFilterItem,
 findSelectedIdx = _indexOf, isItemSelected = _equals, groupBy, tabIndex = 0,
 getKey = defaultGetKey, disabled, onEnter, Item = DefaultItem, Group = DefaultGroup, Empty = DefaultEmpty,
@@ -295,7 +295,7 @@ Placeholder = DefaultPlaceholder, Selected = DefaultSelected, blockOuterClick = 
 
 		if isOpen
 			lastGroup = null
-			_ {s: 'posa lef0 top100% bgwh iw100% _sh1 z3 mt1 tal ova', ref: refItems},
+			_ {s: "posa lef0 top100% bgwh iw100% _sh1 z3 mt1 tal ova #{sOpen}", ref: refItems},
 				if filteredItems.length == 0 then _ Empty, {}
 				else
 					filteredItems.map (item, i) ->
