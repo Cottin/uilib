@@ -16,7 +16,7 @@ export default Tooltip3 = ({s, sInner, sTriangle, children, text, direction = 'u
 	[show, setShow] = useState false
 	[tri, setTri] = useState ''
 
-	if disable then return children
+	if disable then return _ {s}, children
 
 	onMouseEnter = (e) ->
 		{top, left, width, height} = rect = ref.current?.getBoundingClientRect()

@@ -48,7 +48,8 @@ DefaultSelected = ({selected}) ->
 
 # NOTE: render props, eg. renderItem causes hook error with styleSetup/fela so use Component props for now
 export default Dropdown = forwardRef ({s, selected, onChange, items, onTextChange, placeholder = '\u00A0', error,
-openAtStart = false, onClose, autoComplete = false, onKeyDown, filterItem = defaultFilterItem, groupBy,
+openAtStart = false, onClose, autoComplete = false, onKeyDown, filterItem = defaultFilterItem,
+findSelectedIdx = _indexOf, isItemSelected = _equals, groupBy, tabIndex = 0,
 getKey = defaultGetKey, disabled, onEnter, Item = DefaultItem, Group = DefaultGroup, Empty = DefaultEmpty,
 Placeholder = DefaultPlaceholder, Selected = DefaultSelected, blockOuterClick = false}, externalRef) ->
 	[isOpen, setIsOpen] = useState openAtStart
@@ -159,7 +160,7 @@ Placeholder = DefaultPlaceholder, Selected = DefaultSelected, blockOuterClick = 
 	open = (startIdx = null, skipAuto = false) ->
 		setIsOpen true
 		if selected
-			selIdx = _indexOf selected, filteredItems
+			selIdx = findSelectedIdx selected, filteredItems
 			setIdx selIdx
 		else
 			if !_isNil startIdx then setIdx startIdx
@@ -278,7 +279,7 @@ Placeholder = DefaultPlaceholder, Selected = DefaultSelected, blockOuterClick = 
 
 	_ 'a', {s: "fabk-77-14 p10_15 outgyc-2 pr35 #{sError} _fade1 br4
 	xr_c #{sBase} hoc1(fillbk-8) posr #{s}", onBlur,
-	onClick, onKeyDown: onKeyDownSelf, ref, tabIndex: 0},
+	onClick, onKeyDown: onKeyDownSelf, ref, tabIndex},
 		_ SVGarrow, {s: 'w20 fillbk-4 posa rig12', className: 'c1'}
 
 		if autoComplete && isOpen
@@ -299,7 +300,7 @@ Placeholder = DefaultPlaceholder, Selected = DefaultSelected, blockOuterClick = 
 				else
 					filteredItems.map (item, i) ->
 						isMarked = idx == i 
-						isSelected = _equals(selected, item)
+						isSelected = isItemSelected(selected, item)
 						itemProps = {item, idx, i, isSelected, isMarked, text, unSelect,
 						onClick: (e) -> onClickItem item, i, e}
 						if groupBy
