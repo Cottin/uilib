@@ -79,7 +79,6 @@ Placeholder = DefaultPlaceholder, Selected = DefaultSelected, blockOuterClick = 
 		openAndFocus: () ->
 			setIsOpen true
 			setTimeout () ->
-				console.log 'focus from external', refText.current
 				refText.current?.focus()
 			, 0
 		resetAutoComplete: () ->
@@ -127,7 +126,6 @@ Placeholder = DefaultPlaceholder, Selected = DefaultSelected, blockOuterClick = 
 	useLayoutEffect () ->
 		if refItems.current && ref.current && isOpen
 			idxItem = refItems.current.querySelector("[data-i=\"#{idx}\"]");
-			console.log 'idxItem', idxItem
 			idxItem?.scrollIntoView({ behavior: 'instant', block: 'nearest', inline: 'start' })
 		return undefined
 	, [idx]
@@ -169,7 +167,6 @@ Placeholder = DefaultPlaceholder, Selected = DefaultSelected, blockOuterClick = 
 
 		if autoComplete && !skipAuto
 			setText ''
-			console.log 'selected', selected
 			if selected
 				setAutoCompleteFake getText selected
 				selectText()
