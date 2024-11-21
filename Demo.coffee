@@ -38,9 +38,9 @@ DynamicDropdownCurrency = () -> 'Comment back in again if your project uses curr
 
 export default Demo = () ->
 	_ {},
+		_ CalendarDemo, {}
 		_ DropdownDemo, {}
 		_ LineChartDemo, {}
-		_ CalendarDemo, {}
 		_ ButtonDemo, {}
 		_ Tooltip2Demo, {}
 		_ TooltipDemo, {}

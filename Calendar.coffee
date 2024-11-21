@@ -8,7 +8,7 @@ import SVGarrow from 'icons/arrow.svg'
 
 import {useFela} from 'setup'
 
-import {df} from 'comon/shared'
+import {df, capitalize} from 'comon/shared'
 
 
 months = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
@@ -40,10 +40,15 @@ isMulti = (selected) -> _type(selected) == 'Set'
 # It seems to work well, but not yet tested on weeks in skyview.
 # NOTE: It is possible to render 5 items so if scrolling many units, render a dummy inbetween so that if feels
 #	like it's scrolling more than just the same amout as 1 year. To try it out, check commit of 2023-10-22 but
-# it felt like too much was scrolling so decided to not use that idea.
-export default Calendar = ({s, mode = 'month', double = false, selected, marked, look, onChange, onClick, className, scale = 1.0, dev = false}) ->
+# it felt like too much was scrolling so decided to not use that idea in the Calendar animation.
+export default Calendar = ({s, mode = 'month', double = false, selected, marked, look, onChange, onClick, className,
+	scale = 1.0, dev = false}) ->
+
 	[items, setItems] = useState if double then [-2, -1, 0, 1, 2, 3] else [-1, 0, 1] # arbitrary items to enable animation
 	[hoveredDate, setHoveredDate] = useState null # needed to keep track of range hover
+
+	abbreviatedDays = $ [1, 2, 3, 4, 5, 6, 7], _map (i) -> df.dayjs().day(i).format('dd')
+	
 
 	isYear = mode == 'year'
 	isMonth = mode == 'month'
@@ -87,6 +92,7 @@ export default Calendar = ({s, mode = 'month', double = false, selected, marked,
 
 	size = 250 * scale
 	width = size
+	height = size * 1.05
 	if double then width = width * 2
 	stiffness = dev && 30 || 230
 
@@ -133,9 +139,13 @@ export default Calendar = ({s, mode = 'month', double = false, selected, marked,
 	extraHight = isMonth && 1.1 || 1.0
 
 	if look == 'beige'
-		clr = {bg1: 'wh', bg2: 'wh', bg3: 'bun', bg4: 'bun-3', bg5: 'bun-3', ho1: 'bk-1', tx1: 'bk-6', tx2: 'bk-4', tx3: 'bk-6', tx4: 'bk', tx5: 'wh', ar: 'bk-3', sh: '_sh6', bo1: 'bun<10'}
+		clr = {bg1: 'wh', bg2: 'wh', bg3: 'bun', bg4: 'bun-3', bg5: 'bun-3', ho1: 'bk-1',
+		tx1: 'bk-6', tx2: 'bk-4', tx3: 'bk-6', tx4: 'bk', tx5: 'wh', tx6: 'bk-2',
+		ar: 'bk-3', sh: '_sh6', bo1: 'bun<10', mtMonth: '-0.5%'}
 	else
-		clr = {bg1: 'buc>10', bg2: 'buc-9', bg3: 'buc<10', bg4: 'buc-9', bg5: 'wh-2', ho1: 'buc<10-9', tx1: 'wh-9', tx2: 'wh-4', tx3: 'wh-8', tx4: 'wh', tx5: 'wh', ar: 'wh-8', sh: '_sh1', bo1: 'buc<10'}
+		clr = {bg1: 'buc>10', bg2: 'buc-9', bg3: 'buc<10', bg4: 'buc-9', bg5: 'wh-2', ho1: 'buc<10-9',
+		tx1: 'wh-9', tx2: 'wh-4', tx3: 'wh-8', tx4: 'wh', tx5: 'wh', tx6: 'bk-2',
+		ar: 'wh-8', sh: '_sh1', bo1: 'buc<10', mtMonth: '0'}
 
 	_ {s: "w#{width} h#{size*extraHight} #{clr.sh} bg#{clr.bg1} br6 xc__ #{!dev && 'ovh'} #{s}", className, onClick},
 		_ {s: "xrcc bg#{clr.bg2} #{isYear && 'h25%' || 'h20%'} posr"},
@@ -161,6 +171,7 @@ export default Calendar = ({s, mode = 'month', double = false, selected, marked,
 							hovered: hoveredDate, scale, clr, dev}
 						else if isYear
 							_ Year, {year: units[idx], selected, marked, onClickDate, scale, dev}
+							
 
 Year = ({year, selected, onClickDate, scale, dev, ...flippedProps}) ->
 	_ {s: 'w33.33% xg1 xc__ posr', ...flippedProps},
@@ -179,6 +190,16 @@ YearMonth = ({year, month, selected, onClickDate, scale, dev}) ->
 
 #########################################################
 
+
+abbreviatedDaysCache = null
+
+# We can't calculate days too early because application needs chance to call df.setLocale(...)
+# but we also don't want to re-calculate this every render or in every instance of Calendar
+getAbbreviatedDays = ->
+	if !abbreviatedDaysCache
+		abbreviatedDaysCache = [1, 2, 3, 4, 5, 6, 7].map (i) -> df.dayjs().day(i).format('dd')
+	return abbreviatedDaysCache
+
 vmMonth = ({month}) ->
 	firstDay = df.startOf 'week', month
 	lastDay = df.endOf 'week', df.endOf('month', month)
@@ -190,19 +211,22 @@ vmMonth = ({month}) ->
 
 	return {days}
 
-
 Month = ({month, double, selected, marked, onClickDate, onHoverDate, hovered, scale, clr, dev, ...flippedProps}) ->
-	_ {s: "w#{double && '16.66%' || '33.33%'} xg1 xc__ posr", ...flippedProps},
+
+	_ {s: "w#{double && '16.66%' || '33.33%'} xg1 xc__ posr mt#{clr.mtMonth}", ...flippedProps},
 		if month
 			vm = vmMonth {month}
 			_ {s: 'p5% xr__w xg1'},#, style: {alignContent: 'start'}},
+				$ getAbbreviatedDays(), _map (day) -> _ DayLabel, {key: day, day, scale, clr}
 				$ vm.days, _map (day) ->
 					_ Day, {key: day.date, date: day.date, text: day.sText, half: day.half, showHalf: !double,
 					selected, marked, onClickDate, onHoverDate, hovered, scale, clr}
 
+DayLabel = ({day, scale, clr}) ->
+	_ {s: "w#{100/7}% h#{100/7}% xg1 xrcc tac fa#{clr.tx2}7-#{Math.ceil scale*12} useln"}, day
+
 Day = ({date, text, half, showHalf = true, onClickDate, onHoverDate, hovered, selected, marked, scale, clr}) ->
 	if half && !showHalf then return _ {s: "w#{100/7}% h#{100/6}%"}
-
 
 	white = if half then 'wh-6' else 'wh'
 	if isRange selected
@@ -229,7 +253,7 @@ Day = ({date, text, half, showHalf = true, onClickDate, onHoverDate, hovered, se
 	extra = if isRange selected then {onMouseOver: () -> onHoverDate date} else {}
 
 	# _ {s: "w#{100/7}% h#{100/6}% br4 xg1 xrcc tac fawh-#{half && 4 || 8}7-#{Math.ceil scale*13} 
-	_ {s: "w#{100/7}% h#{100/6}% br4 #{sWeekend} xg1 xrcc tac fa#{half && clr.tx2 || clr.tx3}7-#{Math.ceil scale*13} 
+	_ {s: "w#{100/7}% h#{100/7}% br4 #{sWeekend} xg1 xrcc tac fa#{half && clr.tx2 || clr.tx3}7-#{Math.ceil scale*13} 
 	ho(bg#{clr.bg4} fa#{clr.tx4}) #{sSel} #{sMarked} curp useln", ...extra, onClick: () -> onClickDate date},
 		if getToday() == date
 			_ {s: "br50% h80% w80% xrcc bg#{clr.bg5}"}, text
