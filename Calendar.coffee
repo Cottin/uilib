@@ -140,11 +140,11 @@ export default Calendar = ({s, mode = 'month', double = false, selected, marked,
 
 	if look == 'beige'
 		clr = {bg1: 'wh', bg2: 'wh', bg3: 'bun', bg4: 'bun-3', bg5: 'bun-3', ho1: 'bk-1',
-		tx1: 'bk-6', tx2: 'bk-4', tx3: 'bk-6', tx4: 'bk', tx5: 'wh', tx6: 'bk-2',
+		tx1: 'bk-6', tx2: 'bk-4', tx3: 'bk-6', tx4: 'bk', tx5: 'wh', tx6: 'bk-3',
 		ar: 'bk-3', sh: '_sh6', bo1: 'bun<10', mtMonth: '-0.5%'}
 	else
 		clr = {bg1: 'buc>10', bg2: 'buc-9', bg3: 'buc<10', bg4: 'buc-9', bg5: 'wh-2', ho1: 'buc<10-9',
-		tx1: 'wh-9', tx2: 'wh-4', tx3: 'wh-8', tx4: 'wh', tx5: 'wh', tx6: 'bk-2',
+		tx1: 'wh-9', tx2: 'wh-4', tx3: 'wh-8', tx4: 'wh', tx5: 'wh', tx6: 'wh-4',
 		ar: 'wh-8', sh: '_sh1', bo1: 'buc<10', mtMonth: '0'}
 
 	_ {s: "w#{width} h#{size*extraHight} #{clr.sh} bg#{clr.bg1} br6 xc__ #{!dev && 'ovh'} #{s}", className, onClick},
@@ -223,7 +223,7 @@ Month = ({month, double, selected, marked, onClickDate, onHoverDate, hovered, sc
 					selected, marked, onClickDate, onHoverDate, hovered, scale, clr}
 
 DayLabel = ({day, scale, clr}) ->
-	_ {s: "w#{100/7}% h#{100/7}% xg1 xrcc tac fa#{clr.tx2}7-#{Math.ceil scale*12} useln"}, day
+	_ {s: "w#{100/7}% h#{100/7}% xg1 xrcc tac fa#{clr.tx6}7-#{Math.ceil scale*12} useln"}, day
 
 Day = ({date, text, half, showHalf = true, onClickDate, onHoverDate, hovered, selected, marked, scale, clr}) ->
 	if half && !showHalf then return _ {s: "w#{100/7}% h#{100/6}%"}
