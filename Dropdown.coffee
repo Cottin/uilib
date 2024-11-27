@@ -11,7 +11,7 @@ import {useOuterClick, useOuterMouseDown} from './reactUtils'
 
 getText = (item) ->
 	if _isNil(item) then ''
-	else item.text || item.name || _type(item) == 'String' && item || _type(item) == 'Number' && item || item.id
+	else item.text || item.name || _type(item) == 'String' && item || _type(item) == 'Number' && item || item.id
 
 defaultGetKey = (item) ->
 	if _has 'id', item then item.id
@@ -57,15 +57,37 @@ Placeholder = DefaultPlaceholder, Selected = DefaultSelected, blockOuterClick = 
 	[text, setText] = useState ''
 	[autoCompleteFake, setAutoCompleteFake] = useState null
 	ref = useRef null
+
 	refStopPropagation = useRef null
 	useOuterClick ref, (e) ->
 		if refStopPropagation.current
 			e.stopPropagation()
+			e.preventDefault()
 			refStopPropagation.current = false
+	, {prio: 1, capture: true}
+
 	useOuterMouseDown ref, (e) ->
 		if isOpen && blockOuterClick
+			close true
+			e._stopPropagationWorkaround = true
 			refStopPropagation.current = true
 			e.stopPropagation()
+			e.preventDefault()
+	, {prio: 1, capture: true}
+
+	# # An alternative solution to useOuterMouseDown is to use an invisible blocker layer which naturally participates in
+	# # bubbling and you could naturally call e.stopPropagation to stop bubbling. Downside is cursor will always be curd when
+	# # moving mouse outside Dropdown and if blockOuterClick = false we anyway need useOuterMouseDown to acheive natural UX.
+	# onMouseDownBlocker = (e) ->
+	# 	if blockOuterClick
+	# 		e.stopPropagation()
+
+	# 	close true
+
+	# onClickBlocker = (e) ->
+	# 	if blockOuterClick
+	# 		e.stopPropagation()
+
 
 	refItems = useRef null
 	if _isNil items then throw new Error 'items cannot be nil'
@@ -85,6 +107,8 @@ Placeholder = DefaultPlaceholder, Selected = DefaultSelected, blockOuterClick = 
 			setAutoCompleteFake null
 		close: (focus) ->
 			close focus
+		isOpen: () ->
+			isOpen
 
 	
 
@@ -290,6 +314,9 @@ Placeholder = DefaultPlaceholder, Selected = DefaultSelected, blockOuterClick = 
 		else if !selected then _ Placeholder, {placeholder}
 		else _ Selected, {selected}
 
+		# if isOpen && blockOuterClick
+		# 	_ {s: 'posf top0 bot0 lef0 rig0 z2 curd', style: {background: 'transparent'},
+		# 	onMouseDown: onMouseDownBlocker, onClick: onClickBlocker}, 'test'
 		if isOpen
 			lastGroup = null
 			_ {s: "posa lef0 top100% bgwh iw100% _sh1 z3 mt1 tal ova #{sOpen}", ref: refItems},

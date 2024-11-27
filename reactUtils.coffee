@@ -1,4 +1,4 @@
-import always from "ramda/es/always"; import equals from "ramda/es/equals"; import flip from "ramda/es/flip"; import init from "ramda/es/init"; import isNil from "ramda/es/isNil"; import map from "ramda/es/map"; import type from "ramda/es/type"; import without from "ramda/es/without"; #auto_require: esramda
+import _always from "ramda/es/always"; import _equals from "ramda/es/equals"; import _flip from "ramda/es/flip"; import _isNil from "ramda/es/isNil"; import _map from "ramda/es/map"; import _type from "ramda/es/type"; import _without from "ramda/es/without"; #auto_require: _esramda
 import {change, diff, isNilOrEmpty, sf2} from "ramda-extras" #auto_require: esramda-extras
 
 import React, {useState, useEffect, useRef, useCallback} from 'react'
@@ -6,10 +6,11 @@ import React, {useState, useEffect, useRef, useCallback} from 'react'
 import {_} from 'setup'
 
 
-export memoDeep = (f) -> React.memo f, equals
+export memoDeep = (f) -> React.memo f, _equals
+
 
 comparatorWithLog = (prevProps, nextProps) ->
-	isSame = equals prevProps, nextProps
+	isSame = _equals prevProps, nextProps
 	# Note: diff does not support functions so any onClick will break this
 	if !isSame then console.log 'isSame', isSame, 'diff', diff prevProps, nextProps
 	return isSame
@@ -37,7 +38,7 @@ export useOnceState = (state) ->
 	[onceState, setOnceState] = useState state
 
 	useEffect () ->
-		if isNil onceState then setOnceState state
+		if _isNil onceState then setOnceState state
 	, [JSON.stringify state]
 
 	return onceState
@@ -125,8 +126,8 @@ export useContainRelativeToParent = (ref) ->
 
 	return toShortstyleTest s
 
-# convenient if you want to write short one-line useEffects and more beautiful than flip(React.useEffect) ..
-export useEffectFlipped = flip React.useEffect
+# convenient if you want to write short one-line useEffects and more beautiful than _flip(React.useEffect) ..
+export useEffectFlipped = _flip React.useEffect
 
 export useFocus = (deps) ->
 	# NOTE!!!!!!! Doesn't really seem to work. Else part is needed but it throws error when component is removed
@@ -135,7 +136,7 @@ export useFocus = (deps) ->
 	React.useEffect ->
 		if ref?.current then ref.current?.focus()
 		# else
-		#   flip(setTimeout) 10, ->
+		#   _flip(setTimeout) 10, ->
 		#     ref?.current?.focus() # give time if conditonal render
 	, deps
 	return ref
@@ -147,23 +148,91 @@ export useForceScrollbar = () ->
 	, []
 	return null
 
-export useOuterClick = (ref, onOuterClick) ->
-	React.useEffect ->
-		handleClick = (e) -> if ref.current && !ref.current.contains(e.target) then onOuterClick(e)
-		# {capture: true} important if we are also removing the element that's being clicked eg. a toggle.
-		# https://github.com/facebook/react/issues/20325#issuecomment-732707240
-		if ref.current then document.addEventListener 'click', handleClick, {capture: true}
-		return () -> document.removeEventListener 'click', handleClick, {capture: true}
-	, [ref, onOuterClick]
 
-export useOuterMouseDown = (ref, onOuterMouseDown) ->
+# It is a bit overkill to create a custom event manager but the problem with global event listeners added with
+# document.addEventListener is that they don't follow the bubbling order of nodes in the DOM where a child can call
+# e.stopPropagation to stop the bubbling to parents. Instead listeners are called in the order they were added with
+# document.addEventListener which typically means callback of parents are called before childrens callbacks.
+# In order to preserve the possibility to stop bubbling, useOuterClick allows you to specify callback order using prio.
+PrioListeners = do ->
+	handlers = {}
+	globalListeners = {}
+
+	return
+		add: (event, prio, callback) ->
+			handlers[event] ?= []
+			eventHandlers = handlers[event]
+
+			if !globalListeners[event]
+				listener = (e) ->
+					originalStopPropagation = e.stopPropagation.bind(e)
+					shouldStopPropagation = false
+
+					e.stopPropagation = () ->
+						shouldStopPropagation = true
+						originalStopPropagation()
+
+					for handler in eventHandlers
+						handler.callback e
+						if shouldStopPropagation then break
+
+				document.addEventListener event, listener, {capture: true}
+				globalListeners[event] = listener
+
+			if eventHandlers.length == 0
+				eventHandlers.push {prio, callback}
+			else
+				for handler, i in eventHandlers
+					if handler.prio > prio
+						eventHandlers.splice i, 0, {prio, callback}
+						return
+
+				eventHandlers.push {prio, callback}
+
+
+		remove: (event, callback) ->
+			eventHandlers = handlers[event] || []
+			for handler, i in eventHandlers
+				if handler.callback == callback
+					eventHandlers.splice i, 1
+					if eventHandlers.length == 0
+						document.removeEventListener event, globalListeners[event], {capture: true}
+						delete globalListeners[event]
+					break
+
+
+
+# If you want e.preventDefault() to prevent links from being clicked capture needs to be true, that's why we force it.
+# Also seems to be required if we are also removing the element that's being clicked eg. a toggle.
+# https://github.com/facebook/react/issues/20325#issuecomment-732707240
+export useOuterClick = (ref, onOuterClick, {prio} = {prio: null}) ->
 	React.useEffect ->
 		handleClick = (e) ->
-			if ref.current && !ref.current.contains(e.target) then onOuterMouseDown(e)
-		# {capture: true} important if we are also removing the element that's being clicked eg. a toggle.
-		# https://github.com/facebook/react/issues/20325#issuecomment-732707240
-		if ref.current then document.addEventListener 'mousedown', handleClick, {capture: true}
-		return () -> document.removeEventListener 'mousedown', handleClick, {capture: true}
+			if ref.current && !ref.current.contains(e.target)
+				onOuterClick(e)
+		
+		if ref.current
+			if _isNil prio then document.addEventListener 'click', handleClick, {capture: true}
+			else PrioListeners.add 'click', prio, handleClick
+		
+		return () ->
+			if _isNil prio then document.removeEventListener 'click', handleClick, {capture: true}
+			else PrioListeners.remove 'click', handleClick
+	, [ref, onOuterClick]
+
+export useOuterMouseDown = (ref, onOuterMouseDown, {prio} = {prio: 1}) ->
+	React.useEffect ->
+		handleClick = (e) ->
+			if ref.current && !ref.current.contains(e.target)
+				onOuterMouseDown(e)
+		if ref.current
+			if _isNil prio then document.addEventListener 'mousedown', handleClick, {capture: true}
+			else PrioListeners.add 'mousedown', prio, handleClick
+
+		return () ->
+			if _isNil prio then document.removeEventListener 'mousedown', handleClick, {capture: true}
+			else PrioListeners.remove 'mousedown', handleClick
+
 	, [ref, onOuterMouseDown]
 
 export useMouseMonitor = ({mouseMove, mouseUp}, deps, init, skip=false) ->
@@ -279,7 +348,7 @@ _useCall = ({successDelay = 1500, onError = null, asyncCall}) ->
 			return result
 		catch error
 			onError?(error)
-			cs always {error, wait: false}
+			cs _always {error, wait: false}
 			console.error error
 
 	return 
@@ -291,8 +360,8 @@ _useCall = ({successDelay = 1500, onError = null, asyncCall}) ->
 		success: st.success
 		reset: (key = undefined) ->
 			# seems to either reset given key or full state but not really, TODO: test and redocument
-			if key && type(key) == 'string' && !st.error?.meta?[key] then return
-			cs always {}
+			if key && _type(key) == 'string' && !st.error?.meta?[key] then return
+			cs _always {}
 		resetError: (key = undefined) ->
 			if !st.error then return
 			if key
@@ -315,7 +384,7 @@ export useCall2 = useCall
 # eg. Have a local normalized state:
 #				{Client: {1: {id: 1, name: ..}}, Project: {2: {id: 2, name: .., clientId: 1}}}
 # 		and a view model building easy to use data for the views/components:
-#				(state) -> $ state.Clients, values, map(addChildProjectsIfNeeded)
+#				(state) -> $ state.Clients, values, _map(addChildProjectsIfNeeded)
 # 		and some custom operations on the normalized state:
 #				changeClientName: (id, name) -> {Client: {[id]: {name}}}
 # 
@@ -341,11 +410,11 @@ export createViewModel = (makeDefaultState, customExec = {}, viewModel) ->
 			spec = f args..., ref
 			makeChange spec
 
-	exec = {change: makeChange, ...(map(buildCustomOps, customExec))}
+	exec = {change: makeChange, ...(_map(buildCustomOps, customExec))}
 
 	subscribe = (cb) ->
 		ref.subs.push cb
-		return () -> ref.subs = without cb, ref.subs
+		return () -> ref.subs = _without cb, ref.subs
 
 	useViewModel = (stateToVM) ->
 		[localState, setLocalState] = useState () ->
