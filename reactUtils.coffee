@@ -154,7 +154,7 @@ export useForceScrollbar = () ->
 # e.stopPropagation to stop the bubbling to parents. Instead listeners are called in the order they were added with
 # document.addEventListener which typically means callback of parents are called before childrens callbacks.
 # In order to preserve the possibility to stop bubbling, useOuterClick allows you to specify callback order using prio.
-PrioListeners = do ->
+EventPrio = do ->
 	handlers = {}
 	globalListeners = {}
 
@@ -213,11 +213,11 @@ export useOuterClick = (ref, onOuterClick, {prio} = {prio: null}) ->
 		
 		if ref.current
 			if _isNil prio then document.addEventListener 'click', handleClick, {capture: true}
-			else PrioListeners.add 'click', prio, handleClick
+			else EventPrio.add 'click', prio, handleClick
 		
 		return () ->
 			if _isNil prio then document.removeEventListener 'click', handleClick, {capture: true}
-			else PrioListeners.remove 'click', handleClick
+			else EventPrio.remove 'click', handleClick
 	, [ref, onOuterClick]
 
 export useOuterMouseDown = (ref, onOuterMouseDown, {prio} = {prio: 1}) ->
@@ -227,11 +227,11 @@ export useOuterMouseDown = (ref, onOuterMouseDown, {prio} = {prio: 1}) ->
 				onOuterMouseDown(e)
 		if ref.current
 			if _isNil prio then document.addEventListener 'mousedown', handleClick, {capture: true}
-			else PrioListeners.add 'mousedown', prio, handleClick
+			else EventPrio.add 'mousedown', prio, handleClick
 
 		return () ->
 			if _isNil prio then document.removeEventListener 'mousedown', handleClick, {capture: true}
-			else PrioListeners.remove 'mousedown', handleClick
+			else EventPrio.remove 'mousedown', handleClick
 
 	, [ref, onOuterMouseDown]
 
