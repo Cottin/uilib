@@ -126,7 +126,7 @@ export default Button = React.forwardRef ({s, sChildren: sChildrenProp, sBg: sBg
 
 	else if kind == 'popup'
 		sButton += " xg1 xb1 _fade1 xrcc fabk-57-15 borlbk-0 borrbk-0 borbbk-0 bortgyb-8 nf(borlgyb-8) l(br0_0_10_0) f(br0_0_0_10)"
-		sChildren += " br4 p#{pvSize*2.4}_#{phSize}"
+		sChildren += " br4 p#{pvSize*2.8}_#{phSize}"
 
 		if look == 'blue'
 			sButton += " bgwh xg1 #{disabled && 'fabk-1' || 'hofo(fabk-6 bgbu bordbk-2) bortgyb nf(borlgyb)  out0' }"
