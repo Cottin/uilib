@@ -53,7 +53,7 @@ export default Button = React.forwardRef ({s, sChildren: sChildrenProp, sBg: sBg
 
 		if look == 'default'
 			sButton += " #{!disabled && 'hofo(fabk-57-'+fSize+' out0) hofoc4(bggn)'}"
-			if wait || success then sBg += " bggn"
+			if wait || success then sBg += " bggn"
 		else if look == 'beige'
 			sButton += " #{!disabled && 'hofo(bgbeb fabk-5 out0)'} _fade1"
 
@@ -121,7 +121,7 @@ export default Button = React.forwardRef ({s, sChildren: sChildrenProp, sBg: sBg
 		if wait || success then sBg += " bg#{clr}"
 		if disabled then sButton += ' op0.3'
 
-		if !wait && !success then sButton += " hofoc4(bg#{clr}) hoc5(fill#{fillClr})"
+		if !wait && !success then sButton += " hofoc4(bg#{clr}) hoc5(fill#{fillClr})"
 
 
 	else if kind == 'popup'
@@ -129,7 +129,7 @@ export default Button = React.forwardRef ({s, sChildren: sChildrenProp, sBg: sBg
 		sChildren += " br4 p#{pvSize*2.8}_#{phSize}"
 
 		if look == 'blue'
-			sButton += " bgwh xg1 #{disabled && 'fabk-1' || 'hofo(fabk-6 bgbu bordbk-2) bortgyb nf(borlgyb)  out0' }"
+			sButton += " bgwh xg1 #{disabled && 'fabk-1' || 'hofo(fabk-6 bgbu bordbk-2) bortgyb nf(borlgyb) out0' }"
 			spinnerClr = 'buk-6'
 			sSpinner += " h80%"
 		else if look == 'text'
