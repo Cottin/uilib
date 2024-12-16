@@ -118,7 +118,7 @@ export default Modal = ({s, open, children, rootSelector = '#__next'}) ->
 
 	_ ClientOnlyWrapper, {},
 		_ CSSTransition, {in: open && ready, unmountOnExit: true, timeout: 300, classNames: "aniModal", onExiting, onEntering},
-			_ Portal, {rootSelector, dataset: {modalId: modalId}},
+			_ Portal, {rootSelector, 'data-modal-id': modalId},
 				_ {s: "posa w100% p0_20 z111 top15vh <500[top5vh] xrc_ xg1 pea _fade1 #{s}", ref},
 					children
 				_ {s: 'posf w100% h100% z110 bgbk-2 xrcc top0 lef0 pea', className: 'backdrop'}
