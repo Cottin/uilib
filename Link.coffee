@@ -16,7 +16,7 @@ Link = (defaultPost) -> ({href, scroll = false, post = defaultPost, target, rel,
 
   _ NextLink, {href: hrefToUse, prefetch: false, shallow: true, target, rel, scroll, ...rest},
     children
-
+    
 
 export default Link(null)
 
