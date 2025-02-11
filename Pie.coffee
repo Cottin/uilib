@@ -157,7 +157,7 @@ export default Pie = React.memo ({s, s2, items, Label, children, onHover = null,
 		onClick? item, e
 
 	_ {s: "#{s} bgbe br50%"},
-		_ {s: "w100% br50% xrcc z2 sh0_1_3_0_bk-4 posr ho(scale1.05) _fade1 #{s2}", ref: selfRef,
+		_ {s: "w100% br50% xrcc z2 sh0_1_3_0_bk-4 posr ho(scale1.05) _fade1 #{s2}", className, ref: selfRef,
 		style: {aspectRatio: '1/1',
 		background: if isEmpty gradient then colors('beb-5') else "conic-gradient(#{gradient.join ', '})"},
 		onMouseMove: if onHover then mouseMove

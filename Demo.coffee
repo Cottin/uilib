@@ -14,6 +14,7 @@ import {sleep} from 'comon/shared'
 import Button from './Button'
 import LinkButton from './LinkButton'
 import Spinner from './Spinner'
+import Pie from './Pie'
 import Tooltip from './Tooltip'
 import Tooltip2 from './Tooltip2'
 import Dropdown from './Dropdown'
@@ -38,6 +39,7 @@ DynamicDropdownCurrency = () -> 'Comment back in again if your project uses curr
 
 export default Demo = () ->
 	_ {},
+		_ PieDemo, {}
 		_ ButtonDemo, {}
 		_ CalendarDemo, {}
 		_ DropdownDemo, {}
@@ -65,6 +67,37 @@ Item = ({s, desc, children}) ->
 	_ {s: "mb20 #{s} xc__"},
 		children
 		if desc then _ {s: 'fabk-36-12'}, desc
+
+
+pieItems = [{value: 3, color: 'red', hoverColor: 'darkred'}, {value: 5, color: 'lightblue', hoverColor: 'blue'}]
+
+PieDemo = () ->
+	onClickPie = (item, e) ->
+		a = 1
+
+	onClickInner = (e) ->
+		e.stopPropagation()
+
+	_ Box, {title: 'Pie'},
+		_ Item, {desc: 'xxx'},
+			_ {s: 'w200 h200'},
+				_ Pie, {s: 'curp', items: pieItems, Label: PieLabel,
+				onHover: (item) ->
+				onClick: onClickPie
+				},
+					_ {s: 'bgwh br50% h60% w60% xccc', style: {boxShadow: 'inset 1px 1px 3px rgba(0,0,0,0.4)'},
+					onClick: onClickInner},
+						_ Fragment,
+							_ {s: 'xr_b'},
+								_ {s: 'fabk>207-24'}, 'test'
+								_ {s: 'fabk>207-18 ml3'}, 'h'
+
+PieLabel = ({percent}) ->
+	if percent < 3 then return null
+
+	_ {s: 'xrcb'},
+		_ 'span', {s: 'fawh6-11'}, percent
+		_ 'span', {s: 'fawh4-8'}, '%'
 
 
 ButtonDemo = () ->

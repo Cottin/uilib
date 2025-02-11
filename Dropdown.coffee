@@ -45,13 +45,16 @@ DefaultPlaceholder = ({placeholder}) ->
 DefaultSelected = ({selected}) ->
 	_ {s: "useln whn ovh"}, getText selected
 
+DefaultIcon = () ->
+	_ SVGarrow, {s: 'w20 fillbk-4 posa rig12', className: 'c1'}
+
 
 # NOTE: render props, eg. renderItem causes hook error with styleSetup/fela so use Component props for now
 export default Dropdown = forwardRef ({s, sOpen, selected, onChange, items, onTextChange, placeholder = '\u00A0', error,
 openAtStart = false, onClose, autoComplete = false, onKeyDown, filterItem = defaultFilterItem,
-findSelectedIdx = _indexOf, isItemSelected = _equals, groupBy, tabIndex = 0,
+findSelectedIdx = _indexOf, isItemSelected = _equals, groupBy, tabIndex = 0, hideOnNoText = false,
 getKey = defaultGetKey, disabled, onEnter, Item = DefaultItem, Group = DefaultGroup, Empty = DefaultEmpty,
-Placeholder = DefaultPlaceholder, Selected = DefaultSelected, blockOuterClick = false}, externalRef) ->
+Placeholder = DefaultPlaceholder, Selected = DefaultSelected, Icon = DefaultIcon, blockOuterClick = false}, externalRef) ->
 	[isOpen, setIsOpen] = useState openAtStart
 	[idx, setIdx] = useState null
 	[text, setText] = useState ''
@@ -105,6 +108,8 @@ Placeholder = DefaultPlaceholder, Selected = DefaultSelected, blockOuterClick = 
 			, 0
 		resetAutoComplete: () ->
 			setAutoCompleteFake null
+		resetText: () ->
+			setText ''
 		close: (focus) ->
 			close focus
 		isOpen: () ->
@@ -249,7 +254,9 @@ Placeholder = DefaultPlaceholder, Selected = DefaultSelected, blockOuterClick = 
 			e.preventDefault()
 
 		else if e.key == 'Escape'
-			if isOpen then close true
+			if isOpen
+				close true
+				onKeyDown e
 
 		else if e.key == 'Tab'
 			if isOpen then close()
@@ -301,14 +308,15 @@ Placeholder = DefaultPlaceholder, Selected = DefaultSelected, blockOuterClick = 
 	_ 'a', {s: "fabk-77-14 p10_15 outgyc-2 pr35 #{sError} _fade1 br4
 	xr_c #{sBase} hoc1(fillbk-8) posr #{s}", onBlur,
 	onClick, onKeyDown: onKeyDownSelf, ref, tabIndex},
-		_ SVGarrow, {s: 'w20 fillbk-4 posa rig12', className: 'c1'}
+		# _ SVGarrow, {s: 'w20 fillbk-4 posa rig12', className: 'c1'}
+		_ Icon, {}
 
 		if autoComplete && isOpen
 			textToUse = text
 			if autoCompleteFake then textToUse = autoCompleteFake
 			_ Fragment,
-				_ 'input', {s: 'bord0 out0 bg0 posa w100% h100% lef0 top0 fabk-77-14 p10_15', type: 'text',
-				ref: refText, value: textToUse, onKeyDown: onKeyDownSelf, onChange: onChangeText, onClick: onClickText,
+				_ 'input', {s: 'bord0 out0 bg0 posa w100% h100% lef0 top0 fabk-77-14 p10_15 _textboxPlaceholder', type: 'text',
+				placeholder, ref: refText, value: textToUse, onKeyDown: onKeyDownSelf, onChange: onChangeText, onClick: onClickText,
 				autoFocus: openAtStart}
 				_ {s: 'vish'}, '.'
 		else if !selected then _ Placeholder, {placeholder}
@@ -319,8 +327,8 @@ Placeholder = DefaultPlaceholder, Selected = DefaultSelected, blockOuterClick = 
 		# 	onMouseDown: onMouseDownBlocker, onClick: onClickBlocker}, 'test'
 		if isOpen
 			lastGroup = null
-			_ {s: "posa lef0 top100% bgwh iw100% _sh1 z3 mt1 tal ova #{sOpen}", ref: refItems},
-				if filteredItems.length == 0 then _ Empty, {}
+			_ {s: "posa lef0 top100% bgwh iw100% _sh1 z3 mt1 tal ova #{sOpen} #{hideOnNoText && text.length == 0 && 'op0'}", ref: refItems},
+				if filteredItems.length == 0 then _ Empty, {text}
 				else
 					filteredItems.map (item, i) ->
 						isMarked = idx == i 

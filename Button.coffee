@@ -30,18 +30,18 @@ export default Button = React.forwardRef ({s, sChildren: sChildrenProp, sBg: sBg
 		sBg += " br22"
 
 		if look == 'default'
-			sButton += " #{disabled && 'fo(outbue-6_3)' || 'hofoc4(_sh5)'}"
+			sButton += " #{disabled && 'fo(outbue-6_3)' || 'hofoc7(_sh5)'}"
 			sBg += " #{disabled && 'bgbue-4' || 'bgbue'}"
 			sChildren += " fawh7-15"
 
 		else if look == 'link'
-			sButton += " #{!disabled && 'hofoc4(bgbue-1)'}"
+			sButton += " #{!disabled && 'hofoc7(bgbue-1)'}"
 			sChildren += " fabka-76-15"
 
 			spinnerClr = 'bue'
 
 		else if look == 'outline'
-			sButton += " #{!disabled && 'hofoc4(_sh5 outbue_3)'}"
+			sButton += " #{!disabled && 'hofoc7(_sh5 outbue_3)'}"
 			sBg += " outgyc-3"
 			sChildren += " fabka-86-15 w100%"
 
@@ -52,7 +52,7 @@ export default Button = React.forwardRef ({s, sChildren: sChildrenProp, sBg: sBg
 		sChildren += " br22 p#{pvSize}_#{phSize1}"
 
 		if look == 'default'
-			sButton += " #{!disabled && 'hofo(fabk-57-'+fSize+' out0) hofoc4(bggn)'}"
+			sButton += " #{!disabled && 'hofo(fabk-57-'+fSize+' out0) hofoc7(bggn)'}"
 			if wait || success then sBg += " bggn"
 		else if look == 'beige'
 			sButton += " #{!disabled && 'hofo(bgbeb fabk-5 out0)'} _fade1"
@@ -64,19 +64,19 @@ export default Button = React.forwardRef ({s, sChildren: sChildrenProp, sBg: sBg
 		sBg += " br22"
 
 		if look == 'default'
-			sButton += " #{!disabled && 'hofoc4(_sh5)'}"
+			sButton += " #{!disabled && 'hofoc7(_sh5)'}"
 			sBg += " bggna #{disabled && 'bggna-4'}"
 			sChildren += " fawh7-16"
 		else if look == 'red'
-			sButton += " #{!disabled && 'hofoc4(_sh5)'}"
+			sButton += " #{!disabled && 'hofoc7(_sh5)'}"
 			sBg += " bgrec #{disabled && 'bgrec-4'}"
 			sChildren += " fawh7-16"
 		else if look == 'blue'
-			sButton += " #{!disabled && 'hofoc4(_sh5)'}"
+			sButton += " #{!disabled && 'hofoc7(_sh5)'}"
 			sBg += " bgbue #{disabled && 'bgbue-4'}"
 			sChildren += " fawh7-16"
 		else if look == 'text'
-			sButton += " #{!disabled && 'hofoc4(bggyb-3)'}"
+			sButton += " #{!disabled && 'hofoc7(bggyb-3)'}"
 			sChildren += " fabk-57-16 #{disabled && 'fabk-2'}"
 			spinnerClr = 'bk-5'
 
@@ -95,13 +95,13 @@ export default Button = React.forwardRef ({s, sChildren: sChildrenProp, sBg: sBg
 			sBg += " bg#{clr} br4"
 			sChildren += " fawh7-#{fSize}"
 			if disabled then sButton += ' op0.3'
-			else if !wait && !success then sButton += " hofoc4(bg#{clr}<30)"
+			else if !wait && !success then sButton += " hofoc7(bg#{clr}<30)"
 
 		else if look == 'text'
 			sButton += " op0.5 out0"
 			sChildren += " fabk-67-#{fSize}"
 			if disabled then sButton += ' op0.3'
-			else if !wait && !success then sButton += " hofo(op1) hofoc4(bgbk-1)"
+			else if !wait && !success then sButton += " hofo(op1) hofoc7(bgbk-1)"
 			spinnerClr = 'bk-9'
 
 	else if kind == 'circle'
@@ -121,7 +121,7 @@ export default Button = React.forwardRef ({s, sChildren: sChildrenProp, sBg: sBg
 		if wait || success then sBg += " bg#{clr}"
 		if disabled then sButton += ' op0.3'
 
-		if !wait && !success then sButton += " hofoc4(bg#{clr}) hoc5(fill#{fillClr})"
+		if !wait && !success then sButton += " hofoc7(bg#{clr}) hoc8(fill#{fillClr})"
 
 
 	else if kind == 'popup'
@@ -191,11 +191,11 @@ export default Button = React.forwardRef ({s, sChildren: sChildrenProp, sBg: sBg
 		sBg += " br50% iw20"
 
 	_ 'button', {s: "#{sButton} #{s}", className, ref, ...extra, ...rest},
-		_ {s: "#{sBg} #{sBgProp}", className: "c4 xrcc spinnerBg #{success && 'spinnerScale'}"},
+		_ {s: "#{sBg} #{sBgProp}", className: "c7 xrcc spinnerBg #{success && 'spinnerScale'}"},
 			if wait then _ Spinner, {s: "p2 #{sSpinner}", clr: spinnerClr}
 			else if success then _ Checkmark, {s: "#{sSuccess}", clr: spinnerClr}
 
-		_ {s: "#{sChildren} #{sChildrenProp}", className: 'c5'},
+		_ {s: "#{sChildren} #{sChildrenProp}", className: 'c8'},
 			children
 
 
