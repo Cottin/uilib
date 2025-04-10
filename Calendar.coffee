@@ -28,7 +28,7 @@ isMulti = (selected) -> _type(selected) == 'Set'
 # none of the new years [2025, 2026, 2027] has been rendered already so they will just appear without being
 # animated.
 # One solution could be to first render 2025, 2026 and 2027 to the right and then animate them in, but it's
-# unnessecary renderings and will require two render step.
+# unnessecary renderings and will require two render steps.
 # The chosen solution is to always render 3 panels with arbitrary flipId's (starting from -1, 0, 1). If you
 # want the panels to animate left you just add 1 and to animate right subtract 1.
 # The content of the panels is not tied to the flipId's, but instead we keep a list of what content should
@@ -48,7 +48,7 @@ export default Calendar = ({s, mode = 'month', double = false, selected, marked,
 	[hoveredDate, setHoveredDate] = useState null # needed to keep track of range hover
 
 	abbreviatedDays = $ [1, 2, 3, 4, 5, 6, 7], _map (i) -> df.dayjs().day(i).format('dd')
-	
+
 
 	isYear = mode == 'year'
 	isMonth = mode == 'month'
@@ -135,6 +135,9 @@ export default Calendar = ({s, mode = 'month', double = false, selected, marked,
 	onMouseLeave = () ->
 		setHoveredDate null
 
+	onMonthClick = (monthStart) ->
+		onChange [monthStart, df.endOf 'month', monthStart]
+
 
 	extraHight = isMonth && 1.1 || 1.0
 
@@ -153,8 +156,16 @@ export default Calendar = ({s, mode = 'month', double = false, selected, marked,
 				_ SVGarrow, {s: "w#{scale * 28} fill#{clr.ar} rot90"}
 			if double
 				_ {s: "fa#{clr.tx1}7-#{Math.ceil scale*18} useln xr_c w100%"},
-					_ {s: 'w50% xrcc'}, if isMonth then formatMonth units[2]
-					_ {s: 'w50% xrcc'}, if isMonth then formatMonth units[3]
+					if isRange
+						_ Fragment, {},
+							_ {s: 'w50% xrcc'},
+								_ 'span', {s: 'curp ho(tdu)', onClick: -> onMonthClick units[2]}, if isMonth then formatMonth units[2]
+							_ {s: 'w50% xrcc'},
+								_ 'span', {s: 'curp ho(tdu)', onClick: -> onMonthClick units[3]},  if isMonth then formatMonth units[3]
+					else
+						_ Fragment, {},
+							_ {s: 'w50% xrcc'}, if isMonth then formatMonth units[2]
+							_ {s: 'w50% xrcc'}, if isMonth then formatMonth units[3]
 			else
 				_ {s: "fa#{clr.tx1}7-#{Math.ceil scale*18} useln"},
 					if isYear then units[1]
