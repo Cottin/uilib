@@ -41,7 +41,7 @@ export default Tooltip2 = ({s, sInner, sTriangle, children, text, direction = 'u
 
 
 	onMouseLeave = (e) ->
-		setStyle _replace(/op1/, 'op0 pen', style)
+		setStyle _replace(/op1/, 'op0 pen ', style)
 
 	_ {s, onMouseEnter, onMouseLeave, ref},	
 		children

@@ -10,7 +10,7 @@ import {Portal2} from './Modal'
 
 
 # Improved tooltip that only renders when needed for better performance
-export default Tooltip3 = ({s, sInner, sTriangle, children, text, direction = 'up', margin = 7, disable}) ->
+export default Tooltip3 = ({s, sInner, sTriangle, children, text, direction = 'up', margin = 7, disable, onMouseOver}) ->
 	ref = useRef null
 	[style, setStyle] = useState 'top0 lef0 pen'
 	[show, setShow] = useState false
@@ -44,7 +44,7 @@ export default Tooltip3 = ({s, sInner, sTriangle, children, text, direction = 'u
 	onMouseLeave = (e) ->
 		setShow false
 
-	_ {s, onMouseEnter, onMouseLeave, ref},	
+	_ {s, onMouseEnter, onMouseLeave, onMouseOver, ref},	
 		children
 		_ CSSTransition, {in: show, unmountOnExit: true, timeout: 300, classNames: "aniTooltip", appear: true},
 			_ Portal2, {},
