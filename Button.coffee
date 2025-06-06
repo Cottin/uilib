@@ -9,6 +9,7 @@ export default Button = React.forwardRef ({s, sChildren: sChildrenProp, sBg: sBg
 
 	style = {}
 
+
 	if href then throw new Error 'href no longer supported in Button, use LinkButton'
 
 	sButton = "posr p0 xrcc bg0 #{!disabled && 'curp'}"
@@ -22,6 +23,7 @@ export default Button = React.forwardRef ({s, sChildren: sChildrenProp, sBg: sBg
 	pvSize = Math.round 8 * scale
 	phSize = Math.round 25 * scale
 	phSize1 = Math.round 18 * scale
+	brSize = Math.round 4 * scale * scale
 
 
 	if kind == 'login'
@@ -103,6 +105,21 @@ export default Button = React.forwardRef ({s, sChildren: sChildrenProp, sBg: sBg
 			if disabled then sButton += ' op0.3'
 			else if !wait && !success then sButton += " hofo(op1) hofoc7(bgbk-1)"
 			spinnerClr = 'bk-9'
+
+	else if kind == 'emblossed'
+		sButton += " br4"
+		sChildren += " br4 p#{pvSize}_#{phSize}"
+		sSpinner += " h80%"
+
+		clr = 'gna'
+
+		if color == 'green' then clr = 'gn'
+
+		if look == 'green'
+			sButton += " br#{brSize} out0 balingn__gna basi100%__100% ho(basi100%__400%) _fade4"
+			sBg += " br#{brSize} bg0"
+			sChildren += " fawh7-#{fSize}"
+			if disabled then sButton += ' op0.3'
 
 	else if kind == 'circle'
 		sButton += " br50% out0"
