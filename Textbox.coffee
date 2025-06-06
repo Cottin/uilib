@@ -15,7 +15,7 @@ toMask = (mask) ->
 export default Textbox = React.forwardRef ({s, kind = 'box', type = 'text', mask, onChange, onEnter, onKeyDown,
 	error, value, ...rest}, ref) ->
 	sBase = 'outgyc-2 fo(outgyc-8_2) bord0 bgwh xg1 fabka7-14 p10_15 _fade3 _textboxPlaceholder'
-	sError = if error then 'outrec_3 fo(outrec_3)' else ''
+	sError = if error then 'outrec_3 fo(outrec_3) _aniShake' else ''
 
 	maskRE = mask && toMask mask
 

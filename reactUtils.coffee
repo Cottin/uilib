@@ -1,7 +1,7 @@
-import _always from "ramda/es/always"; import _equals from "ramda/es/equals"; import _flip from "ramda/es/flip"; import _isNil from "ramda/es/isNil"; import _map from "ramda/es/map"; import _type from "ramda/es/type"; import _without from "ramda/es/without"; #auto_require: _esramda
-import {change, diff, isNilOrEmpty, sf2} from "ramda-extras" #auto_require: esramda-extras
+import _always from "ramda/es/always"; import _equals from "ramda/es/equals"; import _filter from "ramda/es/filter"; import _flip from "ramda/es/flip"; import _isNil from "ramda/es/isNil"; import _join from "ramda/es/join"; import _map from "ramda/es/map"; import _type from "ramda/es/type"; import _values from "ramda/es/values"; import _without from "ramda/es/without"; #auto_require: _esramda
+import {change, diff, $, isNilOrEmpty, sf2} from "ramda-extras" #auto_require: esramda-extras
 
-import React, {useState, useEffect, useRef, useCallback} from 'react'
+import React, {useState, useEffect, useRef, useCallback, useMemo} from 'react'
 
 import {_} from 'setup'
 
@@ -335,6 +335,7 @@ _useCall = ({successDelay = 1500, onError = null, asyncCall}) ->
 		cs {wait: true, error: undefined, result: undefined, success: undefined}
 		try
 			result = await Promise.resolve asyncCall args...
+			console.log 'result', result
 			if result == 'ABORT'
 				cs {wait: false}
 				return result
@@ -351,17 +352,29 @@ _useCall = ({successDelay = 1500, onError = null, asyncCall}) ->
 			cs _always {error, wait: false}
 			console.error error
 
-	return 
+	errorMessage = undefined
+	# meta has priority
+	if st.error?.meta
+		errorMessage = $ st.error?.meta, _values, _filter((x) -> _type(x) == 'String'), _join ' '
+	# but if not set, then use message if it exists
+	if errorMessage == undefined && !isNilOrEmpty(st.error?.message) && st.error?.message != 'null' 
+		errorMessage = st.error?.message 
+
+
+	return
 		wait: st.wait
 		result: st.result
 		error: st.error?.meta
 		fullError: st.error
-		errorMessage: if !isNilOrEmpty(st.error?.message) && st.error?.message != 'null' then st.error?.message else undefined
+		errorMessage: errorMessage
 		success: st.success
-		reset: (key = undefined) ->
-			# seems to either reset given key or full state but not really, TODO: test and redocument
-			if key && _type(key) == 'string' && !st.error?.meta?[key] then return
-			cs _always {}
+		# reset: (key = undefined) ->
+		# 	# seems to either reset given key or full state but not really, TODO: test and redocument
+		# 	if key && _type(key) == 'string' && !st.error?.meta?[key] then return
+		# 	cs _always {}
+		# Note: seems to be confusion. If we allow reset with key, it's too easy to think it's resetError
+		#				remove this comment and the code above 2025-06-01 if no complaints have been made
+		reset: () -> cs _always {}
 		resetError: (key = undefined) ->
 			if !st.error then return
 			if key
