@@ -257,6 +257,7 @@ Placeholder = DefaultPlaceholder, Selected = DefaultSelected, Icon = DefaultIcon
 			if isOpen
 				close true
 				onKeyDown e
+				e.stopPropagation()
 
 		else if e.key == 'Tab'
 			if isOpen then close()
@@ -282,7 +283,7 @@ Placeholder = DefaultPlaceholder, Selected = DefaultSelected, Icon = DefaultIcon
 		if ref.current && !ref.current.contains(e.relatedTarget)
 			if isOpen then close()
 
-	sError = if error then 'outrec_3 fo(outrec_3)'
+	sError = if error then 'outrec_3 fo(outrec_3) _aniShake'
 
 	onChangeText = (e) ->
 		if autoCompleteFake then setAutoCompleteFake null
