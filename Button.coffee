@@ -170,15 +170,17 @@ export default Button = React.forwardRef ({s, sChildren: sChildrenProp, sBg: sBg
 		sSpinner += " h120% m-10%"
 		sSuccess += " h120% m-10%"
 
+		clr = 'buk'
+		if color == 'black' then clr = 'bka'
 
 		sKind = "lh110%"
 
 		if look == 'default'
-			sChildren += " fabuk-67-#{fSize} borbbuk-2 ho(fabuk borbbuk-7)"
-			spinnerClr = 'buk'
+			sChildren += " fa#{clr}-67-#{fSize} borb#{clr}-2 ho(fa#{clr} borb#{clr}-7) lh110%"
+			spinnerClr = clr
 		else if look == 'noLine'
-			sChildren += " fabuk-67-#{fSize} ho(fabuk)"
-			spinnerClr = 'buk'
+			sChildren += " fa#{clr}-67-#{fSize} ho(fa#{clr})"
+			spinnerClr = clr
 
 	else if kind == 'custom'
 		sChildren += " xrcc"

@@ -24,14 +24,14 @@ filterItem = (item, text) ->
 
 # NOTE: countries is ~4kb and flag-icons ~2kb gziped, could be smart to lazy load this component
 # svgs are loaded individually but seems to be done when needed at render, make sure they do not get bundled.
-export default DropdownCurrency = ({selected, s, onChange, didLoad, ...rest}) ->
+export default DropdownCountry = ({selected, s, onChange, didLoad, ...rest}) ->
 
 	# If you load this component lazily, supply didLoad so you can set a correct initial selected prop
 	useEffect () ->
 		didLoad? countryList 
 	, []
 
-	_ Dropdown, {placeholder: 'Select currency', s, items: countryList, selected, autoComplete: true, onChange,
+	_ Dropdown, {placeholder: 'Select country', s, items: countryList, selected, autoComplete: true, onChange,
 	...rest, filterItem, Item, Selected}
 
 
@@ -46,10 +46,10 @@ Item = ({item, idx, isSelected, i, onClick}) ->
 			# 		_ 'li', {className: "flag flag__#{item.alpha2}"}
 			# _ 'span', {className: "fi fi-#{item.alpha2}"}
 			_ {s: 'w17 h13', className: "flagIconb flagIcon-#{_toLower item.alpha2}"}
-			_ {s: 'ml8'}, "#{item.name} - #{item.currency}#{extra}"
+			_ {s: 'ml8'}, "#{item.name}"
 
 Selected = ({selected}) ->
 	extra = if selected.currencySymbol then " (#{selected.currencySymbol})" else ''
 	_ {s: 'xr_c'},
-		_ {s: 'w17 h13 xs0', className: "flagIconb flagIcon-#{selected.alpha2}"}
-		_ {s: 'ml8'}, "#{selected.name} - #{selected.currency}#{extra}"
+		_ {s: 'w17 h13 xs0', className: "flagIconb flagIcon-#{_toLower selected.alpha2 || ''}"}
+		_ {s: 'ml8'}, "#{selected.name || '\u00A0'}"

@@ -6,6 +6,7 @@ import React, {useState, useLayoutEffect, useRef, forwardRef, useImperativeHandl
 import SVGarrow from 'icons/arrow.svg'
 import SVGcross from 'icons/crossFat.svg'
 import {useFela} from 'setup'
+import {escapeRegExp} from 'comon/shared'
 
 import {useOuterClick, useOuterMouseDown} from './reactUtils'
 
@@ -21,7 +22,7 @@ defaultGetKey = (item) ->
 defaultFilterItem = (item, text) ->
 	if _isEmpty text then return true
 	propToUse = getText item
-	return _test(new RegExp("^#{text}", 'i'), propToUse)
+	return _test(new RegExp("^#{escapeRegExp text}", 'i'), propToUse)
 
 defaultFilterGroup = (group, text) ->
 	return $ group.items, _any (item) -> defaultFilterItem item, text
@@ -40,7 +41,7 @@ DefaultEmpty = ({}) ->
 	_ {s: 'p10_20 fabk-47-14 fsi curd'}, 'No options'
 
 DefaultPlaceholder = ({placeholder}) ->
-	_ {s: "fabk-36-14 fsi useln"}, placeholder
+	_ {s: "fabk-36-14 fsi useln"}, placeholder || '\u00A0'
 
 DefaultSelected = ({selected}) ->
 	_ {s: "useln whn ovh"}, getText selected
@@ -52,7 +53,7 @@ DefaultIcon = () ->
 # NOTE: render props, eg. renderItem causes hook error with styleSetup/fela so use Component props for now
 export default Dropdown = forwardRef ({s, sOpen, selected, onChange, items, onTextChange, placeholder = '\u00A0', error,
 openAtStart = false, onClose, autoComplete = false, onKeyDown, filterItem = defaultFilterItem,
-findSelectedIdx = _indexOf, isItemSelected = _equals, groupBy, tabIndex = 0, hideOnNoText = false,
+findSelectedIdx = _indexOf, isItemSelected = _equals, groupBy, tabIndex = 0, hideOnNoText = false, minAcceptableHeight = 160,
 getKey = defaultGetKey, disabled, onEnter, Item = DefaultItem, Group = DefaultGroup, Empty = DefaultEmpty,
 Placeholder = DefaultPlaceholder, Selected = DefaultSelected, Icon = DefaultIcon, blockOuterClick = false}, externalRef) ->
 	[isOpen, setIsOpen] = useState openAtStart
@@ -124,9 +125,12 @@ Placeholder = DefaultPlaceholder, Selected = DefaultSelected, Icon = DefaultIcon
 		windowHeight = window.innerHeight || document.documentElement.clientHeight
 		del = dropdownEl.getBoundingClientRect()
 		availableAbove = del.top
+		# heightToUse = Math.max(minAcceptableHeight, iel.height)
+		# NOTE: almost better to always use minAcceptableHeight since itemsEl.height is dynamic and the UI becomes weird
+		heightToUse = minAcceptableHeight
 		availableBelow = windowHeight - del.bottom
-		overflowAbove = Math.round iel.height - availableAbove
-		overflowBelow = Math.round iel.height - availableBelow
+		overflowAbove = Math.round heightToUse - availableAbove
+		overflowBelow = Math.round heightToUse - availableBelow
 		fitsAbove = overflowAbove <= 0
 		fitsBelow = overflowBelow <= 0
 		return {availableAbove, availableBelow, overflowAbove, overflowBelow, fitsAbove, fitsBelow}
@@ -326,6 +330,8 @@ Placeholder = DefaultPlaceholder, Selected = DefaultSelected, Icon = DefaultIcon
 		# if isOpen && blockOuterClick
 		# 	_ {s: 'posf top0 bot0 lef0 rig0 z2 curd', style: {background: 'transparent'},
 		# 	onMouseDown: onMouseDownBlocker, onClick: onClickBlocker}, 'test'
+
+		# NOTE: This should open in a portal so z-index is not unsolvable in some cases. If you do, remember to test all places.
 		if isOpen
 			lastGroup = null
 			_ {s: "posa lef0 top100% bgwh iw100% _sh1 z3 mt1 tal ova #{sOpen} #{hideOnNoText && text.length == 0 && 'op0'}", ref: refItems},

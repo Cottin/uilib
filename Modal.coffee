@@ -117,7 +117,7 @@ export default Modal = ({s, open, children, rootSelector = '#__next'}) ->
 			child.style.filter = 'none'
 
 	_ ClientOnlyWrapper, {},
-		_ CSSTransition, {in: open && ready, unmountOnExit: true, timeout: 300, classNames: "aniModal", onExiting, onEntering},
+		_ CSSTransition, {in: open && ready, nodeRef: ref, unmountOnExit: true, timeout: 300, classNames: "aniModal", onExiting, onEntering},
 			_ Portal, {rootSelector, dataset: {modalId: modalId}},
 				_ {s: "posa w100% p0_20 z111 top15vh <500[top5vh] xrc_ xg1 pea _fade1 #{s}", ref},
 					children

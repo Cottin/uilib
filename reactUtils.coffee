@@ -222,18 +222,82 @@ export useOuterClick = (ref, onOuterClick, {prio} = {prio: null}) ->
 
 export useOuterMouseDown = (ref, onOuterMouseDown, {prio} = {prio: 1}) ->
 	React.useEffect ->
-		handleClick = (e) ->
-			if ref.current && !ref.current.contains(e.target)
-				onOuterMouseDown(e)
-		if ref.current
-			if _isNil prio then document.addEventListener 'mousedown', handleClick, {capture: true}
-			else EventPrio.add 'mousedown', prio, handleClick
+		cleanUp = null
+		cancelled = false
+
+		# NOTE: if ref is inside a modal ref.current will be null but if we wrap in setTimeout it has enough time to mount,
+		#				however, if we dynamically load a modal using dynamic(...) we need to keep polling until the ref is set
+		waitForRef = ->
+			if cancelled then return
+
+			if ref.current
+				handleClick = (e) ->
+					if ref.current && !ref.current.contains(e.target)
+						onOuterMouseDown(e)
+
+				if _isNil prio then document.addEventListener 'mousedown', handleClick, {capture: true}
+				else EventPrio.add 'mousedown', prio, handleClick
+
+				cleanUp = () ->
+					if _isNil prio then document.removeEventListener 'mousedown', handleClick, {capture: true}
+					else EventPrio.remove 'mousedown', handleClick
+			else
+				setTimeout waitForRef, 10
+
+		waitForRef()
 
 		return () ->
-			if _isNil prio then document.removeEventListener 'mousedown', handleClick, {capture: true}
-			else EventPrio.remove 'mousedown', handleClick
+			cancelled = true
+			cleanUp?()
 
 	, [ref, onOuterMouseDown]
+
+# export useOuterMouseDown = (ref, onOuterMouseDown, {prio} = {prio: 1}) ->
+# 	React.useEffect ->
+# 		cleanUp = null
+
+# 		# NOTE: if ref is inside a modal ref.current will be null but if we wrap in setTimeout it has enough time to mount
+# 		timer = setTimeout ->
+# 			handleClick = (e) ->
+# 				if ref.current && !ref.current.contains(e.target)
+# 					onOuterMouseDown(e)
+
+# 			if ref.current
+# 				if _isNil prio then document.addEventListener 'mousedown', handleClick, {capture: true}
+# 				else EventPrio.add 'mousedown', prio, handleClick
+
+# 			cleanUp = () ->
+# 				if _isNil prio then document.removeEventListener 'mousedown', handleClick, {capture: true}
+# 				else EventPrio.remove 'mousedown', handleClick
+# 		, 0
+
+# 		return () ->
+# 			clearTimeout timer
+# 			cleanUp?()
+
+# 	, [ref, onOuterMouseDown]
+
+# export useOuterMouseDown = (ref, onOuterMouseDown, {prio} = {prio: 1}) ->
+# 	React.useEffect ->
+# 		return unless ref.current  # Skip if not ready
+
+# 		handleClick = (e) ->
+# 			if ref.current && !ref.current.contains(e.target)
+# 				onOuterMouseDown(e)
+
+# 		if _isNil(prio)
+# 			document.addEventListener 'mousedown', handleClick, {capture: true}
+# 		else
+# 			EventPrio.add 'mousedown', prio, handleClick
+
+# 		->  # Cleanup
+# 			if _isNil(prio)
+# 				document.removeEventListener 'mousedown', handleClick, {capture: true}
+# 			else
+# 				EventPrio.remove 'mousedown', handleClick
+
+# 	, [ref.current, onOuterMouseDown]  # react will re-run this when current changes
+
 
 export useMouseMonitor = ({mouseMove, mouseUp}, deps, init, skip=false) ->
 	React.useEffect () ->
@@ -326,7 +390,7 @@ export useDidUpdateEffect = (fn, deps) ->
 	, deps
 
 
-_useCall = ({successDelay = 1500, onError = null, asyncCall}) ->
+_useCall = ({successDelay = 1500, errorDelay = 0, onError = null, asyncCall}) ->
 	[st, cs] = useChangeState {}
 	isMounted = useRef false
 	isMountedGuard isMounted
@@ -335,7 +399,6 @@ _useCall = ({successDelay = 1500, onError = null, asyncCall}) ->
 		cs {wait: true, error: undefined, result: undefined, success: undefined}
 		try
 			result = await Promise.resolve asyncCall args...
-			console.log 'result', result
 			if result == 'ABORT'
 				cs {wait: false}
 				return result
@@ -351,13 +414,18 @@ _useCall = ({successDelay = 1500, onError = null, asyncCall}) ->
 			onError?(error)
 			cs _always {error, wait: false}
 			console.error error
+			if errorDelay > 0
+				setTimeout ->
+					if isMounted.current != true then return
+					cs {error: undefined}
+				, errorDelay
 
 	errorMessage = undefined
 	# meta has priority
 	if st.error?.meta
 		errorMessage = $ st.error?.meta, _values, _filter((x) -> _type(x) == 'String'), _join ' '
 	# but if not set, then use message if it exists
-	if errorMessage == undefined && !isNilOrEmpty(st.error?.message) && st.error?.message != 'null' 
+	if isNilOrEmpty(errorMessage) && !isNilOrEmpty(st.error?.message) && st.error?.message != 'null' 
 		errorMessage = st.error?.message 
 
 

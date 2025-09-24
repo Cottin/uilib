@@ -16,6 +16,7 @@ export default Textbox = React.forwardRef ({s, kind = 'box', type = 'text', mask
 	error, value, ...rest}, ref) ->
 	sBase = 'outgyc-2 fo(outgyc-8_2) bord0 bgwh xg1 fabka7-14 p10_15 _fade3 _textboxPlaceholder'
 	sError = if error then 'outrec_3 fo(outrec_3) _aniShake' else ''
+	sDisabled = rest.disabled && 'bggyb-5 f_bk-4 outgyb-9'
 
 	maskRE = mask && toMask mask
 
@@ -32,7 +33,7 @@ export default Textbox = React.forwardRef ({s, kind = 'box', type = 'text', mask
 
 		onChange?(e.target.value, e)
 
-	_ 'input', {s: "#{sBase} #{sKind} #{sError} #{s}", ref, type, spellCheck: 'false', onChange: onChangeSelf,
+	_ 'input', {s: "#{sBase} #{sKind} #{sError} #{sDisabled} #{s}", ref, type, spellCheck: 'false', onChange: onChangeSelf,
 	value: value || '',
 	onKeyDown: (e) ->
 		if e.keyCode == 13 then onEnter?()
