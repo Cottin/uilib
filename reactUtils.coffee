@@ -221,6 +221,12 @@ export useOuterClick = (ref, onOuterClick, {prio} = {prio: null}) ->
 	, [ref, onOuterClick]
 
 export useOuterMouseDown = (ref, onOuterMouseDown, {prio} = {prio: 1}) ->
+	return useOuterMouseX 'mousedown', ref, onOuterMouseDown, {prio}
+
+export useOuterMouseUp = (ref, onOuterMouseUp, {prio} = {prio: 1}) ->
+	return useOuterMouseX 'mouseup', ref, onOuterMouseUp, {prio}
+
+useOuterMouseX = (event, ref, onOuterMouseX, {prio} = {prio: 1}) ->
 	React.useEffect ->
 		cleanUp = null
 		cancelled = false
@@ -233,14 +239,14 @@ export useOuterMouseDown = (ref, onOuterMouseDown, {prio} = {prio: 1}) ->
 			if ref.current
 				handleClick = (e) ->
 					if ref.current && !ref.current.contains(e.target)
-						onOuterMouseDown(e)
+						onOuterMouseX(e)
 
-				if _isNil prio then document.addEventListener 'mousedown', handleClick, {capture: true}
-				else EventPrio.add 'mousedown', prio, handleClick
+				if _isNil prio then document.addEventListener event, handleClick, {capture: true}
+				else EventPrio.add event, prio, handleClick
 
 				cleanUp = () ->
-					if _isNil prio then document.removeEventListener 'mousedown', handleClick, {capture: true}
-					else EventPrio.remove 'mousedown', handleClick
+					if _isNil prio then document.removeEventListener event, handleClick, {capture: true}
+					else EventPrio.remove event, handleClick
 			else
 				setTimeout waitForRef, 10
 
@@ -250,7 +256,7 @@ export useOuterMouseDown = (ref, onOuterMouseDown, {prio} = {prio: 1}) ->
 			cancelled = true
 			cleanUp?()
 
-	, [ref, onOuterMouseDown]
+	, [ref, onOuterMouseX]
 
 # export useOuterMouseDown = (ref, onOuterMouseDown, {prio} = {prio: 1}) ->
 # 	React.useEffect ->
